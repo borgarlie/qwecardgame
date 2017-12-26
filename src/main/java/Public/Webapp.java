@@ -1,7 +1,11 @@
 package Public;
 
-/**
- * Created by borgarlie on 26/12/17.
- */
+import io.javalin.Handler;
+
 public class Webapp {
+
+    public static Handler webapp = ctx -> {
+        ctx.html("qwe");
+    };
+
 }
