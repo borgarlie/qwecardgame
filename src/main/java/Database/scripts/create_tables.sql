@@ -24,7 +24,8 @@ CREATE TABLE cards (
 CREATE TABLE decks (
     deck_id integer PRIMARY KEY,
     deck_name text NOT NULL,
-    username text NOT NULL
+    username text NOT NULL,
+    UNIQUE (deck_name, username)
 );
 
 CREATE TABLE deck_card (

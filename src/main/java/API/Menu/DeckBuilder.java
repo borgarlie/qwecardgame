@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class DeckBuilder {
@@ -44,8 +45,9 @@ public class DeckBuilder {
                 .cardIds(card_ids)
                 .build();
 
-        DeckDatabase.create(deck);
-
-        ctx.json(true);
+        int deck_id = DeckDatabase.create(deck);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("deck_id", deck_id);
+        ctx.json(map);
     };
 }
