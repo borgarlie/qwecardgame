@@ -1,49 +1,49 @@
 import API.Game.Cards;
 import API.Game.Game;
+import API.Menu.DeckBuilder;
 import Public.Webapp;
 import io.javalin.Javalin;
-import io.javalin.translator.json.JavalinJacksonPlugin;
 
 import static io.javalin.ApiBuilder.path;
 import static io.javalin.ApiBuilder.get;
-
+import static io.javalin.ApiBuilder.post;
 
 
 public class Main {
 
     public static void main(String[] args) {
 
-        // config for database
+        // Config for database
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
-        // jackson config
-//        JavalinJacksonPlugin.configure(objectMapper);
-
-        // setup the REST API and web app
+        // Setup the REST API and web app
         Javalin app = Javalin.create()
                 .port(1337)
                 .enableStaticFiles("html");
 
-        // paths
+        // Web app
         app.get("/qwe", Webapp.webapp);
 
-        // API
+        // REST API
         app.routes(() -> {
             path("cards", () -> {
                 get(Cards.getAll);
             });
+            path("deck", () -> {
+                post(DeckBuilder.createNew);
+            });
         });
 
-        // WebSocket
+        // WebSocket - used for the actual gameplay
         app.ws("/game", Game.class);
 
-        // start the server
+        // Start the server
         app.start();
 
-        System.out.println("Webapp is started");
+        System.out.println("Server has started");
     }
 }

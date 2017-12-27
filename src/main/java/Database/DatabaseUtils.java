@@ -23,6 +23,7 @@ public class DatabaseUtils {
         try {
             if (conn != null) {
                 conn.close();
+                System.out.println("Connection to SQLite has been closed.");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
