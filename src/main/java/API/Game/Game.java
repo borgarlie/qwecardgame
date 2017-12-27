@@ -21,7 +21,6 @@ public class Game
         String username = "User" + nextUserNumber++;
         userUsernameMap.put(session, username);
         broadcastMessage("Server", (username + " joined the chat"));
-
     }
 
     @OnWebSocketClose
