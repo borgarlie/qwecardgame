@@ -48,13 +48,27 @@ public class DeckDatabase {
             return -1;
         }
         deck.getCardIds().forEach(cardIdWithAmount
-                -> insertCard(conn, deck_id, cardIdWithAmount.getId(), cardIdWithAmount.getAmount()));
+                -> insertCard(deck_id, cardIdWithAmount.getId(), cardIdWithAmount.getAmount()));
         return deck_id;
     }
 
+    private static void updateDeckName(Deck deck) {
+        String sql = "UPDATE decks SET deck_name = ? WHERE deck_id = ?";
+        Connection conn = getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, deck.getName());
+            pstmt.setInt(2, deck.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     // Insert a new card to a deck
-    public static void insertCard(Connection conn, int deck_id, int card_id, int amount) {
+    private static void insertCard(int deck_id, int card_id, int amount) {
         String sql = "INSERT INTO deck_card(deck_id, card_id, amount) VALUES(?, ?, ?)";
+        Connection conn = getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, deck_id);
@@ -66,11 +80,32 @@ public class DeckDatabase {
         }
     }
 
+    private static void removeAllCardsFromDeck(int deck_id) {
+        String sql = "DELETE FROM deck_card WHERE deck_id = ?";
+        Connection conn = getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, deck_id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    // What about errors when updating?
     // TODO: This should also be an atomic operation
-    public static boolean update(Deck deck) {
+    /*
+        Replaces the whole deck with new cards
+     */
+    public static void update(Deck deck) {
+        int deck_id = deck.getId();
+        // update name of deck
+        updateDeckName(deck);
         // delete all old cards from deck
+        removeAllCardsFromDeck(deck_id);
         // add new cards to deck
-        return false;
+        deck.getCardIds().forEach(cardIdWithAmount
+                -> insertCard(deck_id, cardIdWithAmount.getId(), cardIdWithAmount.getAmount()));
     }
 
     private static List<CardIdWithAmount> getCardIdsWithAmount(int deck_id) {
@@ -130,6 +165,7 @@ public class DeckDatabase {
                 List<Card> cards = CardDatabase.getByIds(cardIdsWithAmount);
                 List<CardWithAmount> cardsWithAmount = mergeCardsAndAmount(cardIdsWithAmount, cards);
                 Deck deck = Deck.builder()
+                        .id(deck_id)
                         .name(rs.getString("deck_name"))
                         .username(rs.getString("username"))
                         .cards(cardsWithAmount)

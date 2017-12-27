@@ -4,9 +4,7 @@ import API.Menu.DeckBuilder;
 import Public.Webapp;
 import io.javalin.Javalin;
 
-import static io.javalin.ApiBuilder.path;
-import static io.javalin.ApiBuilder.get;
-import static io.javalin.ApiBuilder.post;
+import static io.javalin.ApiBuilder.*;
 
 
 public class Main {
@@ -28,6 +26,9 @@ public class Main {
             });
             path("deck", () -> {
                 post(DeckBuilder.createNew);
+                path("id/:id", () -> {
+                    put(DeckBuilder.update);
+                });
                 path("username/:username", () -> {
                     get(DeckBuilder.getDecksByUsername);
                 });
@@ -41,6 +42,5 @@ public class Main {
         app.start();
 
         System.out.println("Server has started");
-
     }
 }
