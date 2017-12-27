@@ -3,7 +3,7 @@ package GameLogic;
 public class GameError extends Exception {
 
     public enum ErrorCode {
-        INIT_ERROR
+        INIT_ERROR, NOT_ENOUGH_MANA, WRONG_CARD_TYPE, NOT_ALLOWED
     }
 
     ErrorCode error;

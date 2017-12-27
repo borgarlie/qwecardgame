@@ -3,6 +3,7 @@ package Pojos;
 import lombok.*;
 
 @Getter
+@Setter
 @EqualsAndHashCode
 @AllArgsConstructor
 @ToString
@@ -34,4 +35,6 @@ public class Card {
     boolean can_attack_creature;
     boolean must_attack;
 
+    // All cards are untapped by default
+    boolean isTapped = false;
 }
