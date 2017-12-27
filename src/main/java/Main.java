@@ -13,13 +13,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Config for database
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
         // Setup the REST API and web app
         Javalin app = Javalin.create()
                 .port(1337)
@@ -35,6 +28,9 @@ public class Main {
             });
             path("deck", () -> {
                 post(DeckBuilder.createNew);
+                path("username/:username", () -> {
+                    get(DeckBuilder.getDecksByUsername);
+                });
             });
         });
 
@@ -45,5 +41,6 @@ public class Main {
         app.start();
 
         System.out.println("Server has started");
+
     }
 }

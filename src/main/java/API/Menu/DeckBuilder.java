@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 public class DeckBuilder {
     public static Handler createNew = ctx -> {
@@ -48,6 +49,14 @@ public class DeckBuilder {
         int deck_id = DeckDatabase.create(deck);
         HashMap<String, Object> map = new HashMap<>();
         map.put("deck_id", deck_id);
+        ctx.json(map);
+    };
+
+    public static Handler getDecksByUsername = ctx -> {
+        String username = ctx.param("username");
+        List<Deck> decks = DeckDatabase.getAllForUsername(username);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("decks", decks);
         ctx.json(map);
     };
 }

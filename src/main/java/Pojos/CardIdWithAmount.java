@@ -1,15 +1,13 @@
 package Pojos;
 
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor
 @ToString
+@Builder
 public class CardIdWithAmount {
     int id;
     int amount;
