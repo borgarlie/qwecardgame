@@ -3,6 +3,7 @@ package GameLogic;
 import Database.DeckDatabase;
 import Pojos.Card;
 import Pojos.Deck;
+import org.eclipse.jetty.websocket.api.Session;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,7 @@ public class PlayerState {
 
     // Non-changing variables for the player state
     MainGameLoop.Player player;
+    Session session;
     String username;
     Deck initialDeck;
 
@@ -34,8 +36,9 @@ public class PlayerState {
     // Other interactive variables
     boolean has_added_mana = false;
 
-    public PlayerState(MainGameLoop.Player player, String username, int deck_id) throws GameError {
+    public PlayerState(MainGameLoop.Player player, Session session, String username, int deck_id) throws GameError {
         this.player = player;
+        this.session = session;
         this.username = username;
         Optional<Deck> optDeck = DeckDatabase.get(deck_id);
         if (!optDeck.isPresent()) {
@@ -160,7 +163,7 @@ public class PlayerState {
     }
 
     public static void main(String[] args) throws GameError {
-        PlayerState newPlayer = new PlayerState(MainGameLoop.Player.PLAYER1, "TestPlayer1", 12);
+        PlayerState newPlayer = new PlayerState(MainGameLoop.Player.PLAYER1, null, "TestPlayer1", 12);
         System.out.println("Deck size: " + newPlayer.deck.size());
         System.out.println("Hand size: " + newPlayer.hand.size());
         System.out.println("Shields size: " + newPlayer.shields.size());

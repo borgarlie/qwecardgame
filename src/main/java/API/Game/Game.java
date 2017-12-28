@@ -1,16 +1,40 @@
 package API.Game;
 
+import GameLogic.GameError;
+import GameLogic.MainGameLoop;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 @WebSocket(maxTextMessageSize = 64 * 1024)
-public class Game
-{
+public class Game {
+
+    // Used for storing the id of the game and the player number (1 or 2)
+    class GameIdAndPlayerId {
+        String gameId;
+        MainGameLoop.Player playerId;
+    }
+
+    // Map containing the game id and player number (1 or 2) for the given session
+    private static Map<Session, GameIdAndPlayerId> sessions = new ConcurrentHashMap<>();
+    // Map containing the game state for the given game id
+    private static Map<String, MainGameLoop> games = new ConcurrentHashMap<>();
+
+    // username -> session
+    private static Map<String, Session> waitingPlayers = new ConcurrentHashMap<>();
+
+    // game requests
+    private static Map<String, String> requests = new ConcurrentHashMap<>();
+
+    // if request is "accepted" -> remove from request map and automaticly start game -> send "game start" to both players
+
+    // TODO: Use these maps.. implement the communication / wrapper layer
+
 
     private static Map<Session, String> userUsernameMap = new ConcurrentHashMap<>();
     private static int nextUserNumber = 1; // Assign to username for next connecting user
@@ -20,7 +44,7 @@ public class Game
         System.out.println("Connection established");
         String username = "User" + nextUserNumber++;
         userUsernameMap.put(session, username);
-        broadcastMessage("Server", (username + " joined the chat"));
+        broadcastMessage("Server", (username + " is ready for game"));
     }
 
     @OnWebSocketClose
@@ -49,7 +73,21 @@ public class Game
 
     private void onText(Session session, String message) {
         if (session.isOpen()) {
-            broadcastMessage(userUsernameMap.get(session), message);
+
+            GameIdAndPlayerId gameIdAndPlayerId = sessions.get(session);
+            MainGameLoop gameLoop = games.get(gameIdAndPlayerId.gameId);
+
+//            broadcastMessage(userUsernameMap.get(session), message);
+//            String json = new JSONObject().toString();
+            String json = message;
+            // json.type == "endturn"
+            if (json.equals("end_turn")) {
+                try {
+                    gameLoop.endTurn(gameIdAndPlayerId.playerId);
+                } catch (GameError | IOException gameError) {
+                    gameError.printStackTrace();
+                }
+            }
         }
     }
 
