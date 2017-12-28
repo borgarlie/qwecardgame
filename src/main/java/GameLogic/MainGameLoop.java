@@ -14,6 +14,8 @@ import static GameLogic.GameError.ErrorCode.NOT_ALLOWED;
  */
 public class MainGameLoop {
 
+    // These are messages going OUT from the server to players
+
     // Type = what kind of message is it.
     // Examples: new_turn, card_drawn, error, ???
     public static final String TYPE = "type";
