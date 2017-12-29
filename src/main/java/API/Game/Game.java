@@ -6,8 +6,9 @@ import GameLogic.MainGameLoop;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONTokener;
+//import org.json.simple.parser.JSONParser;
+//import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -66,26 +67,24 @@ public class Game {
     }
 
     @OnWebSocketMessage
-    public void onString(Session session, String message) throws IOException, ParseException {
+    public void onString(Session session, String message) throws IOException {
         System.out.println("Message receieved as string");
         onText(session, message);
     }
 
     // Currently ignoring offset
     @OnWebSocketMessage
-    public void onBytes(Session session, byte buf[], int offset, int length) throws IOException, ParseException {
+    public void onBytes(Session session, byte buf[], int offset, int length) throws IOException {
         System.out.println("Message received as byte");
         String message = new String(buf);
         onText(session, message);
     }
 
-    private void onText(Session session, String message) throws ParseException, IOException {
+    private void onText(Session session, String message) throws IOException {
         if (session.isOpen()) {
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(message);
-            JSONObject jsonObject = (JSONObject) obj;
-//            org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) obj;
-            Boolean inGame = jsonObject.getBoolean(IN_GAME); // if false -> is in menu
+            JSONObject jsonObject = new JSONObject(message);
+            Boolean inGame = jsonObject.getBoolean(IN_GAME);
+            // if false -> is in menu
             if (inGame) {
                 GameIdAndPlayerId gameIdAndPlayerId = sessions.get(session);
                 MainGameLoop gameLoop = games.get(gameIdAndPlayerId.gameId);
@@ -105,9 +104,16 @@ public class Game {
         }
     }
 
-    private static void handleMenuChoice(JSONObject jsonObject, Session session) {
+    private static void handleMenuChoice(JSONObject jsonObject, Session session) throws IOException {
         String type = jsonObject.getString(TYPE);
-
+        System.out.println(type);
+        String json = new JSONObject()
+                .put(TYPE, "test")
+                .put("something", "something too")
+                .toString();
+        session.getRemote().sendString(json);
+        // TODO: Request player for game
+        // Accept / Deny request -> send response and init game
     }
 
     private static void broadcastNewPlayer(String username) {
