@@ -126,6 +126,9 @@ public class PlayerState {
     }
 
     public Card addToBattleZone(int hand_position) throws GameError {
+        if (hand_position >= this.hand.size()) {
+            throw new GameError(NOT_ENOUGH_CARDS, "You do not have that many cards");
+        }
         Card card = this.hand.get(hand_position).toBuilder().build();
         if (card.is_spell()) {
             throw new GameError(WRONG_CARD_TYPE, "Can not add spell card to the battle zone");

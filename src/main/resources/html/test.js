@@ -16,12 +16,10 @@ function sendText() {
 
 // Send end turn
 function sendEndTurn() {
-    // Construct a msg object containing the data the server needs to process the message from the chat client.
     var msg = {
         in_game: true,
         type: "end_turn"
     };
-    // Send the msg object as a JSON-formatted string.
     socket.send(JSON.stringify(msg));
 }
 
@@ -39,12 +37,12 @@ function sendRequest(username, deck_id) {
 // Accept or deny a request
 function sendAcceptRequest(username, accept, deck_id) {
     var msg = {
-            in_game: false,
-            type: "accept_request",
-            accept_request: accept,
-            username: username,
-            deck_id: deck_id
-        };
+        in_game: false,
+        type: "accept_request",
+        accept_request: accept,
+        username: username,
+        deck_id: deck_id
+    };
     socket.send(JSON.stringify(msg));
 }
 
@@ -66,13 +64,20 @@ socket.onmessage = function(event) {
 };
 
 function sendPlaceMana(hand_position) {
-    // Construct a msg object containing the data the server needs to process the message from the chat client.
     var msg = {
         in_game: true,
         type: "place_mana",
         hand_position: hand_position
     };
-    // Send the msg object as a JSON-formatted string.
+    socket.send(JSON.stringify(msg));
+}
+
+function sendAddToBattleZone(hand_position) {
+    var msg = {
+        in_game: true,
+        type: "add_to_battlezone",
+        hand_position: hand_position
+    };
     socket.send(JSON.stringify(msg));
 }
 

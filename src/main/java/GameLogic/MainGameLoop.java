@@ -26,6 +26,7 @@ public class MainGameLoop {
     public static final String START_HAND = "start_hand";
     public static final String DRAWN_CARD = "drawn_card";
     public static final String PLACED_MANA = "placed_mana";
+    public static final String ADD_TO_BATTLEZONE = "add_to_battlezone";
 
     public enum Player {
         PLAYER1, PLAYER2
@@ -111,13 +112,27 @@ public class MainGameLoop {
 
     public void placeMana(Player player, int handPosition) throws GameError, IOException {
         if (!isAllowedToMakeAMove(player)) {
-            throw new GameError(NOT_ALLOWED, "Not allowed to end turn when it is not your turn");
+            throw new GameError(NOT_ALLOWED, "Not allowed to place mana when it is not your turn");
         }
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         Card newManaCard = currentPlayerState.addMana(handPosition);
         String json = new JSONObject()
                 .put(TYPE, PLACED_MANA)
                 .put(PLACED_MANA, newManaCard.toJson())
+                .toString();
+        PlayerState otherPlayerState = getOtherPlayerState(player);
+        otherPlayerState.session.getRemote().sendString(json);
+    }
+
+    public void addToBattleZone(Player player, int handPosition) throws GameError, IOException {
+        if (!isAllowedToMakeAMove(player)) {
+            throw new GameError(NOT_ALLOWED, "Not allowed to summon creature when it is not your turn");
+        }
+        PlayerState currentPlayerState = getCurrentPlayerState(player);
+        Card summonedCreatureCard = currentPlayerState.addToBattleZone(handPosition);
+        String json = new JSONObject()
+                .put(TYPE, ADD_TO_BATTLEZONE)
+                .put(ADD_TO_BATTLEZONE, summonedCreatureCard.toJson())
                 .toString();
         PlayerState otherPlayerState = getOtherPlayerState(player);
         otherPlayerState.session.getRemote().sendString(json);

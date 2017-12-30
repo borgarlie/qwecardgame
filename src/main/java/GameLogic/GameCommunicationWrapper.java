@@ -22,6 +22,7 @@ public class GameCommunicationWrapper {
     public static final String ERROR = "error";
     public static final String ECHO = "echo";
     public static final String PLACE_MANA = "place_mana";
+    public static final String ADD_TO_BATTLEZONE = "add_to_battlezone";
 
     public static void handleGameMove(
             JSONObject jsonObject,
@@ -76,5 +77,13 @@ public class GameCommunicationWrapper {
         System.out.println("Place mana");
         int handPosition = jsonObject.getInt("hand_position");
         gameLoop.placeMana(player, handPosition);
+    }
+
+    @HandleWebSocketType(ADD_TO_BATTLEZONE)
+    public static void handleAddToBattleZone(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
+            throws IOException, GameError {
+        System.out.println("Add to battle zone");
+        int handPosition = jsonObject.getInt("hand_position");
+        gameLoop.addToBattleZone(player, handPosition);
     }
 }
