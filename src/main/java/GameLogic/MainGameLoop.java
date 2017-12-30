@@ -28,18 +28,21 @@ public class MainGameLoop {
     public static final String BLOCKER_INTERACTION = "blocker_interaction";
     public static final String SHIELD_TRIGGER = "shield_trigger";
     public static final String USE_BLOCKER = "USE_BLOCKER";
+    public static final String CARD_DIES = "card_dies";
 
     public enum Player {
         PLAYER1, PLAYER2
     }
 
-    String gameId;
-    PlayerState player1state;
-    PlayerState player2state;
-    Player turn;
+    public String gameId;
 
-    boolean shieldTriggerInteractionActive = false;
-    boolean blockerInteractionActive = false;
+    private PlayerState player1state;
+    private PlayerState player2state;
+    private Player turn;
+
+    private boolean shieldTriggerInteractionActive = false;
+    private boolean blockerInteractionActive = false;
+    private int attackingCreatureBattleZonePosition = -1;
 
     public MainGameLoop(Session player1sessision, String player1Username, int player1DeckId,
                         Session player2session, String player2Username, int player2DeckId)
@@ -77,8 +80,6 @@ public class MainGameLoop {
     }
 
     public void endTurn(Player player) throws GameError, IOException {
-        // TODO: Make this check somewhere else?
-        // Problem is that sometimes the other player needs to make a decision. E.g. whether or not to block an attack.
         if (!isAllowedToMakeAMove(player)) {
             throw new GameError(NOT_ALLOWED, "Not allowed to end turn when it is not your turn");
         }
@@ -98,6 +99,13 @@ public class MainGameLoop {
             .put(DRAWN_CARD, drawn_card.toJson())
             .toString();
         currentPlayerState.session.getRemote().sendString(json);
+    }
+
+    private Player getOtherPlayer(Player player) {
+        if (player == Player.PLAYER1) {
+            return Player.PLAYER2;
+        }
+        return Player.PLAYER1;
     }
 
     private PlayerState getCurrentPlayerState(Player player) {
@@ -155,7 +163,9 @@ public class MainGameLoop {
         }
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         Card attackCard = currentPlayerState.canAttackPlayer(battleZonePosition);
+        attackingCreatureBattleZonePosition = battleZonePosition;
         PlayerState otherPlayerState = getOtherPlayerState(player);
+        // TODO: Also -> If attackCard has effect "can not be blocked" -> continue
         if (otherPlayerState.has_blocker()) {
             // Requires additional interaction before moving on
             String json = new JSONObject()
@@ -166,19 +176,28 @@ public class MainGameLoop {
             blockerInteractionActive = true;
             return;
         }
+        continueAttackingPlayer(player);
+    }
+
+    private void continueAttackingPlayer(Player player) throws IOException {
+        PlayerState currentPlayerState = getCurrentPlayerState(player);
+        PlayerState otherPlayerState = getOtherPlayerState(player);
         Card shield = otherPlayerState.attackThisPlayer();
+        int battleZonePosition = this.attackingCreatureBattleZonePosition;
         // Requires interaction before moving on
         String json = new JSONObject()
                 .put(TYPE, CHECK_FOR_SHIELD_TRIGGER)
                 .put(CHECK_FOR_SHIELD_TRIGGER, shield.isShield_trigger())
                 .put(CARD, shield.toJson())
-                .put(ATTACK_WITH_POSITION, battleZonePosition) // Need to send position back, since there can be multiple of the same card
+                .put(ATTACK_WITH_POSITION, battleZonePosition)
+                // Need to send position to other player,
+                // since there can be multiple of the same card
                 .toString();
         otherPlayerState.session.getRemote().sendString(json);
-        String json = new JSONObject()
+        String json2 = new JSONObject()
                 .put(TYPE, CHECK_FOR_SHIELD_TRIGGER)
                 .toString();
-        currentPlayerState.session.getRemote().sendString(json);
+        currentPlayerState.session.getRemote().sendString(json2);
         shieldTriggerInteractionActive = true;
         // Problem if we do not force this is that the initiating player KNOW that there is a shield trigger present.
         // Maybe we should FORCE interaction ? E.g. force the other player to press OK or something after getting a
@@ -188,24 +207,62 @@ public class MainGameLoop {
 
     public void blockerInteraction(Player player, int battleZonePosition) throws GameError, IOException {
         if (!blockerInteractionActive) {
-            throw new GameError(NOT_ALLOWED, "No shield trigger interaction active");
+            throw new GameError(NOT_ALLOWED, "No blocker interaction active");
         }
-        // TODO: Implement this
         PlayerState otherPlayerState = getOtherPlayerState(player);
         if (battleZonePosition < 0) {
             // Not using a blocker
-            String json = new JSONObject()
-                    .put(TYPE, BLOCKER_INTERACTION)
-                    .put(USE_BLOCKER, false)
-                    .toString();
-            otherPlayerState.session.getRemote().sendString(json);
+            // We do not need to send information that the player is not blocking
+            // Because when "check for shield trigger" is sent, we know it has not been blocked
+            //
+            // Continue with breaking shield
+            // Need to switch the player, as it is not the blocking player,
+            // but the other player that initiated the attack
+            player = getOtherPlayer(player);
+            continueAttackingPlayer(player);
+            blockerInteractionActive = false; // reset global value
+            return;
         }
         // using blocker
-        // TODO: Need to include outcome... who wins the fight between attacking creature and blocker
-        // Where to get attacking creature from? Hand position of attacking creature? save it?
         PlayerState currentPlayerState = getCurrentPlayerState(player);
-        Card usedBlocker = currentPlayerState.useBlocker(battleZonePosition);
-        blockerInteractionActive = false;
+        Card blockingCard = currentPlayerState.getCardInBattleZonePosition(battleZonePosition);
+        if (!blockingCard.isBlocker()) {
+            throw new GameError(NOT_ALLOWED, "This card is not a blocker");
+        }
+        Card attackingCard = otherPlayerState.getCardInBattleZonePosition(attackingCreatureBattleZonePosition);
+        int outcome = currentPlayerState.useBlocker(blockingCard, attackingCard);
+        String cardLivesJson = new JSONObject()
+                .put(TYPE, USE_BLOCKER)
+                .put(CARD_DIES, false)
+                .toString();
+        String cardDiesJson = new JSONObject()
+                .put(TYPE, USE_BLOCKER)
+                .put(CARD_DIES, true)
+                .toString();
+        switch (outcome) {
+            case 1:
+                // Blocker wins
+                otherPlayerState.killCardInBattlezone(attackingCreatureBattleZonePosition);
+                currentPlayerState.session.getRemote().sendString(cardLivesJson);
+                otherPlayerState.session.getRemote().sendString(cardDiesJson);
+                break;
+            case -1:
+                // Attacker wins
+                currentPlayerState.killCardInBattlezone(battleZonePosition);
+                currentPlayerState.session.getRemote().sendString(cardDiesJson);
+                otherPlayerState.session.getRemote().sendString(cardLivesJson);
+                break;
+            default:
+                // Draw - both dies
+                currentPlayerState.killCardInBattlezone(battleZonePosition);
+                otherPlayerState.killCardInBattlezone(attackingCreatureBattleZonePosition);
+                currentPlayerState.session.getRemote().sendString(cardDiesJson);
+                otherPlayerState.session.getRemote().sendString(cardDiesJson);
+                break;
+        }
+        // TODO: What to do about effects on blocker cards and attacking cards?
+        attackingCreatureBattleZonePosition = -1; // reset global value
+        blockerInteractionActive = false; // reset global value
     }
 
     public void shieldTriggerInteraction(Player player, boolean useShieldTrigger)
@@ -226,12 +283,13 @@ public class MainGameLoop {
             otherPlayerState.session.getRemote().sendString(json);
         }
         currentPlayerState.useShieldTrigger();
-        shieldTriggerInteractionActive = false;
+        shieldTriggerInteractionActive = false; // reset global value
         String json = new JSONObject()
                 .put(TYPE, SHIELD_TRIGGER)
                 .put(SHIELD_TRIGGER, true)
                 .put(CARD, card.toJson())
                 .toString();
         otherPlayerState.session.getRemote().sendString(json);
+        attackingCreatureBattleZonePosition = -1; // reset global value
     }
 }

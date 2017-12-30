@@ -166,6 +166,9 @@ public class PlayerState {
             throw new GameError(NOT_ENOUGH_CARDS, "You do not have that many cards in the battle zone");
         }
         Card card = this.battlezone.get(battleZonePosition).toBuilder().build();
+        if (!card.isCan_attack_player()) {
+            throw new GameError(NOT_ALLOWED, "That card can not attack players");
+        }
         if (card.isSummoningSickness()) {
             throw new GameError(SUMMONING_SICKNESS, "That card has summoning sickness");
         }
@@ -177,6 +180,7 @@ public class PlayerState {
 
     // Removes a shield from this player and places the shield in their hand
     public Card attackThisPlayer() {
+        // TODO: Implement: if 0 shields -> attack player and win
         int lastShield = this.shields.size() - 1;
         Card shield = this.shields.get(lastShield).toBuilder().build();
         this.shields.remove(lastShield);
@@ -203,9 +207,31 @@ public class PlayerState {
         return this.hand.get(lastHand).toBuilder().build();
     }
 
-    public Card useBlocker(int battlezonePosition) {
-        // TODO: Implement this
-        return null;
+    public Card getCardInHandPosition(int handPosition) {
+        return this.hand.get(handPosition).toBuilder().build();
+    }
+
+    public Card getCardInBattleZonePosition(int battleZonePosition) {
+        return this.battlezone.get(battleZonePosition).toBuilder().build();
+    }
+    /*
+        +1 = this player wins, -1 = this player looses, 0 is draw (both dies).
+     */
+    public int useBlocker(Card thisPlayersCard, Card otherPlayersCard) {
+        if (thisPlayersCard.getTotalAttackingPower() > otherPlayersCard.getTotalAttackingPower()) {
+            return 1;
+        }
+        else if (thisPlayersCard.getTotalAttackingPower() < otherPlayersCard.getTotalAttackingPower()) {
+            return -1;
+        }
+        return 0;
+    }
+
+    /*
+        Can be used after blocker has defeated a monster that should be killed
+     */
+    public void killCardInBattlezone(int battleZonePosition) {
+        this.battlezone.remove(battleZonePosition);
     }
 
     public Card attackCreature(int battleZonePosition) {
