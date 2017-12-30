@@ -4,11 +4,13 @@ import GameLogic.GameCommunicationWrapper;
 import GameLogic.GameError;
 import GameLogic.MainGameLoop;
 import GameLogic.MenuCommunicationWrapper;
+import Pojos.GameIdAndPlayerId;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,14 +22,7 @@ public class WebSocketEndpoint {
     public static final String TYPE = "type";
     public static final String ERROR = "error";
     public static final String IN_GAME = "in_game";
-
-    // Used for storing the id of the game and the player number (1 or 2)
-    class GameIdAndPlayerId {
-        String gameId;
-        MainGameLoop.Player playerId;
-    }
-
-    // TODO: Check if any of these can be private .. or if we should move them
+    public static final String CONNECTED_PLAYERS = "connected_players";
 
     // Map containing the game id and player number (1 or 2) for the given session
     public static Map<Session, GameIdAndPlayerId> sessions = new ConcurrentHashMap<>();
@@ -39,22 +34,29 @@ public class WebSocketEndpoint {
     // username -> session
     public static Map<String, Session> waitingPlayers = new ConcurrentHashMap<>();
 
-    // game requests
-    public static Map<String, String> requests = new ConcurrentHashMap<>();
-    // if request is "accepted" -> remove from request map and automaticly start game -> send "game start" to both players
-
     private static int nextUserNumber = 1; // Assign to username for next connecting user
 
     private static GameCommunicationWrapper communicationWrapper = new GameCommunicationWrapper();
 
     @OnWebSocketConnect
-    public void onConnection(Session session) {
+    public void onConnection(Session session) throws IOException {
         System.out.println("Connection established");
+        sendPlayerList(session);
         String username = "User" + nextUserNumber++;
         waitingPlayersSessions.put(session, username);
         waitingPlayers.put(username, session);
         // Broadcast that a new player has joined and is available
         broadcastNewPlayer(username);
+    }
+
+    private void sendPlayerList(Session session) throws IOException {
+        ArrayList<String> users = new ArrayList<>();
+        waitingPlayers.keySet().forEach(users::add);
+        String json = new JSONObject()
+                .put(TYPE, CONNECTED_PLAYERS)
+                .put(CONNECTED_PLAYERS, users)
+                .toString();
+        session.getRemote().sendString(json);
     }
 
     @OnWebSocketClose
@@ -86,9 +88,9 @@ public class WebSocketEndpoint {
             Boolean inGame = jsonObject.getBoolean(IN_GAME);
             if (inGame) {
                 GameIdAndPlayerId gameIdAndPlayerId = sessions.get(session);
-                MainGameLoop gameLoop = games.get(gameIdAndPlayerId.gameId);
+                MainGameLoop gameLoop = games.get(gameIdAndPlayerId.getGameId());
                 try {
-                    communicationWrapper.handleGameMove(jsonObject, gameLoop, gameIdAndPlayerId.playerId);
+                    communicationWrapper.handleGameMove(jsonObject, gameLoop, gameIdAndPlayerId.getPlayerId());
                 } catch (GameError gameError) {
                     gameError.printStackTrace();
                     String json = new JSONObject()
@@ -103,6 +105,7 @@ public class WebSocketEndpoint {
         }
     }
 
+    // Should it be sent to the player itself?
     private static void broadcastNewPlayer(String username) {
         String sendMessage = new JSONObject()
                 .put("type", "new_player")

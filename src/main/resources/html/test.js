@@ -26,17 +26,28 @@ function sendText2() {
     socket.send(JSON.stringify(msg));
 }
 
-
 // Send a request to play a game to a user
-function sendRequest(username) {
+function sendRequest(username, deck_id) {
     var msg = {
         in_game: false,
         type: "play_request",
-        username: username
+        username: username,
+        deck_id: deck_id
     };
     socket.send(JSON.stringify(msg));
 }
 
+// Accept or deny a request
+function sendAcceptRequest(username, accept, deck_id) {
+    var msg = {
+            in_game: false,
+            type: "accept_request",
+            accept_request: accept,
+            username: username,
+            deck_id: deck_id
+        };
+    socket.send(JSON.stringify(msg));
+}
 
 // main receive function
 socket.onmessage = function(event) {
