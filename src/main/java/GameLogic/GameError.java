@@ -5,7 +5,8 @@ import org.json.JSONObject;
 public class GameError extends Exception {
 
     public enum ErrorCode {
-        INIT_ERROR, NOT_ENOUGH_MANA, WRONG_CARD_TYPE, NOT_ALLOWED, NOT_ENOUGH_CARDS
+        INIT_ERROR, NOT_ENOUGH_MANA, WRONG_CARD_TYPE, NOT_ALLOWED,
+        NOT_ENOUGH_CARDS, SUMMONING_SICKNESS, ALREADY_TAPPED
     }
 
     ErrorCode error;

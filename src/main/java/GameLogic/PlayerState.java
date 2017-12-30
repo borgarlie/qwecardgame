@@ -127,7 +127,7 @@ public class PlayerState {
 
     public Card addToBattleZone(int hand_position) throws GameError {
         if (hand_position >= this.hand.size()) {
-            throw new GameError(NOT_ENOUGH_CARDS, "You do not have that many cards");
+            throw new GameError(NOT_ENOUGH_CARDS, "You do not have that many cards in your hand");
         }
         Card card = this.hand.get(hand_position).toBuilder().build();
         if (card.is_spell()) {
@@ -138,6 +138,8 @@ public class PlayerState {
         }
         this.hand.remove(hand_position);
         this.tapMana(card.getMana_cost());
+        card.setSummoningSickness(true);
+        this.battlezone.add(card);
         return card;
     }
 
@@ -159,7 +161,61 @@ public class PlayerState {
         return (int) this.manazone.stream().filter(card -> !card.isTapped()).count();
     }
 
-    public Card useSpellCard(int hand_position) {
+    public Card canAttackPlayer(int battleZonePosition) throws GameError {
+        if (battleZonePosition >= this.battlezone.size()) {
+            throw new GameError(NOT_ENOUGH_CARDS, "You do not have that many cards in the battle zone");
+        }
+        Card card = this.battlezone.get(battleZonePosition).toBuilder().build();
+        if (card.isSummoningSickness()) {
+            throw new GameError(SUMMONING_SICKNESS, "That card has summoning sickness");
+        }
+        if (card.isTapped()) {
+            throw new GameError(ALREADY_TAPPED, "That card is already tapped");
+        }
+        return card;
+    }
+
+    // Removes a shield from this player and places the shield in their hand
+    public Card attackThisPlayer() {
+        int lastShield = this.shields.size() - 1;
+        Card shield = this.shields.get(lastShield).toBuilder().build();
+        this.shields.remove(lastShield);
+        this.hand.add(shield);
+        return shield;
+    }
+
+    public boolean has_blocker() {
+        return this.battlezone.stream().filter(Card::isBlocker).findFirst().isPresent();
+    }
+
+    public Card useShieldTrigger() {
+        // TODO: Make sure this works for all cards
+        Card shieldTrigger = getLastCardAddedToHand();
+        this.hand.remove(this.hand.size() - 1);
+        // TODO: Use shield trigger effect
+        // E.g. if creature -> summon to battlezone and possibly use effects
+        // if spell -> use spell.. possibly with interaction
+        return shieldTrigger;
+    }
+
+    public Card getLastCardAddedToHand() {
+        int lastHand = this.hand.size() - 1;
+        return this.hand.get(lastHand).toBuilder().build();
+    }
+
+    public Card useBlocker(int battlezonePosition) {
+        // TODO: Implement this
+        return null;
+    }
+
+    public Card attackCreature(int battleZonePosition) {
+        // TODO: Implement this
+        // Can only attack tapped creatures unless the attacking creature
+        // has the spell effect "can attack untapped creatures"
+        return null;
+    }
+
+    public Card useSpellCard(int handPosition) {
         // TODO: Implement this
         // Probably gonna involve some complex logic
         return null;

@@ -23,6 +23,9 @@ public class GameCommunicationWrapper {
     public static final String ECHO = "echo";
     public static final String PLACE_MANA = "place_mana";
     public static final String ADD_TO_BATTLEZONE = "add_to_battlezone";
+    public static final String HAND_POSITION = "hand_position";
+    public static final String USE_SHIELD_TRIGGER = "use_shield_trigger";
+    public static final String USE_BLOCKER = "use_blocker";
 
     public static void handleGameMove(
             JSONObject jsonObject,
@@ -75,7 +78,7 @@ public class GameCommunicationWrapper {
     public static void handlePlaceMana(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
             throws IOException, GameError {
         System.out.println("Place mana");
-        int handPosition = jsonObject.getInt("hand_position");
+        int handPosition = jsonObject.getInt(HAND_POSITION);
         gameLoop.placeMana(player, handPosition);
     }
 
@@ -83,7 +86,23 @@ public class GameCommunicationWrapper {
     public static void handleAddToBattleZone(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
             throws IOException, GameError {
         System.out.println("Add to battle zone");
-        int handPosition = jsonObject.getInt("hand_position");
+        int handPosition = jsonObject.getInt(HAND_POSITION);
         gameLoop.addToBattleZone(player, handPosition);
+    }
+
+    @HandleWebSocketType(USE_SHIELD_TRIGGER)
+    public static void handleShieldTrigger(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
+            throws IOException, GameError {
+        System.out.println("Shield interaction");
+        boolean useShieldTrigger = jsonObject.getBoolean(USE_SHIELD_TRIGGER);
+        gameLoop.shieldTriggerInteraction(player, useShieldTrigger);
+    }
+
+    @HandleWebSocketType(USE_BLOCKER)
+    public static void handleBlockerInteraction(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
+            throws IOException, GameError {
+        System.out.println("Blocker interaction");
+        int handPosition = jsonObject.getInt(HAND_POSITION);
+        gameLoop.blockerInteraction(player, handPosition);
     }
 }

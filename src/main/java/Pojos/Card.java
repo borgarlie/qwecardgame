@@ -38,6 +38,8 @@ public class Card {
 
     // All cards are untapped by default
     boolean isTapped = false;
+    // When a card is summoned to the battle zone, it receives summoning sickness
+    boolean summoningSickness = false;
 
     public JSONObject toJson() {
         return new JSONObject(this);
