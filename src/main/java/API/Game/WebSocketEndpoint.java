@@ -3,12 +3,10 @@ package API.Game;
 import GameLogic.GameCommunicationWrapper;
 import GameLogic.GameError;
 import GameLogic.MainGameLoop;
+import GameLogic.MenuCommunicationWrapper;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.json.JSONObject;
-import org.json.JSONTokener;
-//import org.json.simple.parser.JSONParser;
-//import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,9 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 @WebSocket(maxTextMessageSize = 64 * 1024)
-public class Game {
+public class WebSocketEndpoint {
 
-    // These are messages used in the menu
+    // Messages used in the menu
     public static final String TYPE = "type";
     public static final String ERROR = "error";
     public static final String IN_GAME = "in_game";
@@ -29,18 +27,20 @@ public class Game {
         MainGameLoop.Player playerId;
     }
 
+    // TODO: Check if any of these can be private .. or if we should move them
+
     // Map containing the game id and player number (1 or 2) for the given session
-    private static Map<Session, GameIdAndPlayerId> sessions = new ConcurrentHashMap<>();
+    public static Map<Session, GameIdAndPlayerId> sessions = new ConcurrentHashMap<>();
     // Map containing the game state for the given game id
-    private static Map<String, MainGameLoop> games = new ConcurrentHashMap<>();
+    public static Map<String, MainGameLoop> games = new ConcurrentHashMap<>();
 
     // session -> username
-    private static Map<Session, String> waitingPlayersSessions = new ConcurrentHashMap<>();
+    public static Map<Session, String> waitingPlayersSessions = new ConcurrentHashMap<>();
     // username -> session
-    private static Map<String, Session> waitingPlayers = new ConcurrentHashMap<>();
+    public static Map<String, Session> waitingPlayers = new ConcurrentHashMap<>();
 
     // game requests
-    private static Map<String, String> requests = new ConcurrentHashMap<>();
+    public static Map<String, String> requests = new ConcurrentHashMap<>();
     // if request is "accepted" -> remove from request map and automaticly start game -> send "game start" to both players
 
     private static int nextUserNumber = 1; // Assign to username for next connecting user
@@ -84,7 +84,6 @@ public class Game {
         if (session.isOpen()) {
             JSONObject jsonObject = new JSONObject(message);
             Boolean inGame = jsonObject.getBoolean(IN_GAME);
-            // if false -> is in menu
             if (inGame) {
                 GameIdAndPlayerId gameIdAndPlayerId = sessions.get(session);
                 MainGameLoop gameLoop = games.get(gameIdAndPlayerId.gameId);
@@ -99,21 +98,9 @@ public class Game {
                     session.getRemote().sendString(json);
                 }
             } else {
-                handleMenuChoice(jsonObject, session);
+                MenuCommunicationWrapper.handleMenuChoice(jsonObject, session);
             }
         }
-    }
-
-    private static void handleMenuChoice(JSONObject jsonObject, Session session) throws IOException {
-        String type = jsonObject.getString(TYPE);
-        System.out.println(type);
-        String json = new JSONObject()
-                .put(TYPE, "test")
-                .put("something", "something too")
-                .toString();
-        session.getRemote().sendString(json);
-        // TODO: Request player for game
-        // Accept / Deny request -> send response and init game
     }
 
     private static void broadcastNewPlayer(String username) {

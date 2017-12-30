@@ -1,5 +1,5 @@
 import API.Game.Cards;
-import API.Game.Game;
+import API.Game.WebSocketEndpoint;
 import API.Menu.DeckBuilder;
 import Public.Webapp;
 import io.javalin.Javalin;
@@ -35,8 +35,8 @@ public class Main {
             });
         });
 
-        // WebSocket - used for the actual gameplay
-        app.ws("/game", Game.class);
+        // WebSocket - used for the actual gameplay and menu
+        app.ws("/game", WebSocketEndpoint.class);
 
         // Start the server
         app.start();

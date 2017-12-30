@@ -14,6 +14,30 @@ function sendText() {
     socket.send(JSON.stringify(msg));
 }
 
+// Main send function 2 (test)
+// Does not work until game is set up
+function sendText2() {
+    // Construct a msg object containing the data the server needs to process the message from the chat client.
+    var msg = {
+        in_game: true,
+        type: "test"
+    };
+    // Send the msg object as a JSON-formatted string.
+    socket.send(JSON.stringify(msg));
+}
+
+
+// Send a request to play a game to a user
+function sendRequest(username) {
+    var msg = {
+        in_game: false,
+        type: "play_request",
+        username: username
+    };
+    socket.send(JSON.stringify(msg));
+}
+
+
 // main receive function
 socket.onmessage = function(event) {
     var msg = JSON.parse(event.data);
