@@ -1,7 +1,6 @@
 package API.Game;
 
 import GameLogic.GameCommunicationWrapper;
-import GameLogic.GameError;
 import GameLogic.MainGameLoop;
 import GameLogic.MenuCommunicationWrapper;
 import Pojos.GameIdAndPlayerId;
@@ -20,7 +19,6 @@ public class WebSocketEndpoint {
 
     // Messages used in the menu
     public static final String TYPE = "type";
-    public static final String ERROR = "error";
     public static final String IN_GAME = "in_game";
     public static final String CONNECTED_PLAYERS = "connected_players";
 
@@ -35,8 +33,6 @@ public class WebSocketEndpoint {
     public static Map<String, Session> waitingPlayers = new ConcurrentHashMap<>();
 
     private static int nextUserNumber = 1; // Assign to username for next connecting user
-
-    private static GameCommunicationWrapper communicationWrapper = new GameCommunicationWrapper();
 
     @OnWebSocketConnect
     public void onConnection(Session session) throws IOException {
@@ -89,16 +85,7 @@ public class WebSocketEndpoint {
             if (inGame) {
                 GameIdAndPlayerId gameIdAndPlayerId = sessions.get(session);
                 MainGameLoop gameLoop = games.get(gameIdAndPlayerId.getGameId());
-                try {
-                    communicationWrapper.handleGameMove(jsonObject, gameLoop, gameIdAndPlayerId.getPlayerId());
-                } catch (GameError gameError) {
-                    gameError.printStackTrace();
-                    String json = new JSONObject()
-                            .put(TYPE, ERROR)
-                            .put(ERROR, gameError)
-                            .toString();
-                    session.getRemote().sendString(json);
-                }
+                GameCommunicationWrapper.handleGameMove(jsonObject, gameLoop, gameIdAndPlayerId.getPlayerId(), session);
             } else {
                 MenuCommunicationWrapper.handleMenuChoice(jsonObject, session);
             }
