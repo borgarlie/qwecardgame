@@ -1,6 +1,7 @@
 package Pojos;
 
 import lombok.*;
+import org.json.JSONObject;
 
 @Getter
 @Setter
@@ -37,4 +38,9 @@ public class Card {
 
     // All cards are untapped by default
     boolean isTapped = false;
+
+    public JSONObject toJson() {
+        return new JSONObject(this);
+    }
+
 }

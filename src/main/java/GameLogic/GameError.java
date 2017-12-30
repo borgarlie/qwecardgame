@@ -1,5 +1,7 @@
 package GameLogic;
 
+import org.json.JSONObject;
+
 public class GameError extends Exception {
 
     public enum ErrorCode {
@@ -17,5 +19,11 @@ public class GameError extends Exception {
     public GameError(ErrorCode error, String message) {
         this.error = error;
         this.message = message;
+    }
+
+    public JSONObject toJson() {
+        return new JSONObject()
+                .put("error_code", this.error)
+                .put("message", this.message);
     }
 }

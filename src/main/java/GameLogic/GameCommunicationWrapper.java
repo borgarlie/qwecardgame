@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class GameCommunicationWrapper {
 
-    // map of all menu websocket type methods
+    // map of all in game websocket type methods
     private static Map<String, Method> webSocketTypeMethods
             = ReflectionUtil.findWebSocketTypeMethods(GameCommunicationWrapper.class, HandleWebSocketType.class);
 
@@ -21,6 +21,7 @@ public class GameCommunicationWrapper {
     public static final String END_TURN = "end_turn";
     public static final String ERROR = "error";
     public static final String ECHO = "echo";
+    public static final String PLACE_MANA = "place_mana";
 
     public static void handleGameMove(
             JSONObject jsonObject,
@@ -36,13 +37,25 @@ public class GameCommunicationWrapper {
     }
 
     private static void handleError(Exception e, JSONObject jsonObject, Session session) throws IOException {
-        System.out.println("Error occurred when handling menu choice. Exception: " + e);
-        String json = new JSONObject()
-                .put(TYPE, ERROR)
-                .put(ECHO, jsonObject)
-                .put(ERROR, e)
-                .toString();
-        session.getRemote().sendString(json);
+        System.out.println("Error occurred when handling in game choice. Exception: " + e);
+        if (e.getCause() instanceof GameError) {
+            GameError gameError = (GameError) e.getCause();
+            String json = new JSONObject()
+                    .put(TYPE, ERROR)
+                    .put(ECHO, jsonObject)
+                    .put(ERROR, gameError.toJson())
+                    .toString();
+            session.getRemote().sendString(json);
+        } else {
+            String json = new JSONObject()
+                    .put(TYPE, ERROR)
+                    .put(ECHO, jsonObject)
+                    .put(ERROR, e)
+                    .toString();
+            session.getRemote().sendString(json);
+        }
+        // Print stack trace
+        e.printStackTrace();
     }
 
     @HandleWebSocketType(ERROR)
@@ -55,5 +68,13 @@ public class GameCommunicationWrapper {
             throws IOException, GameError {
         System.out.println("End turn");
         gameLoop.endTurn(player);
+    }
+
+    @HandleWebSocketType(PLACE_MANA)
+    public static void handlePlaceMana(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
+            throws IOException, GameError {
+        System.out.println("Place mana");
+        int handPosition = jsonObject.getInt("hand_position");
+        gameLoop.placeMana(player, handPosition);
     }
 }

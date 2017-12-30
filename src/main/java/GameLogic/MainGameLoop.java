@@ -25,6 +25,7 @@ public class MainGameLoop {
 
     public static final String START_HAND = "start_hand";
     public static final String DRAWN_CARD = "drawn_card";
+    public static final String PLACED_MANA = "placed_mana";
 
     public enum Player {
         PLAYER1, PLAYER2
@@ -84,18 +85,41 @@ public class MainGameLoop {
         startNewTurnForPlayer(turn);
     }
 
-    public void startNewTurnForPlayer(Player player) throws IOException {
-        PlayerState currentPlayerState;
-        if (player == Player.PLAYER1) {
-            currentPlayerState = player1state;
-        } else {
-            currentPlayerState = player2state;
-        }
+    private void startNewTurnForPlayer(Player player) throws IOException {
+        PlayerState currentPlayerState = getCurrentPlayerState(player);
         Card drawn_card = currentPlayerState.startNewTurn();
         String json = new JSONObject()
             .put(TYPE, NEW_TURN)
-            .put(DRAWN_CARD, drawn_card)
+            .put(DRAWN_CARD, drawn_card.toJson())
             .toString();
         currentPlayerState.session.getRemote().sendString(json);
+    }
+
+    private PlayerState getCurrentPlayerState(Player player) {
+        if (player == Player.PLAYER1) {
+            return player1state;
+        }
+        return player2state;
+    }
+
+    private PlayerState getOtherPlayerState(Player player) {
+        if (player == Player.PLAYER1) {
+            return player2state;
+        }
+        return player1state;
+    }
+
+    public void placeMana(Player player, int handPosition) throws GameError, IOException {
+        if (!isAllowedToMakeAMove(player)) {
+            throw new GameError(NOT_ALLOWED, "Not allowed to end turn when it is not your turn");
+        }
+        PlayerState currentPlayerState = getCurrentPlayerState(player);
+        Card newManaCard = currentPlayerState.addMana(handPosition);
+        String json = new JSONObject()
+                .put(TYPE, PLACED_MANA)
+                .put(PLACED_MANA, newManaCard.toJson())
+                .toString();
+        PlayerState otherPlayerState = getOtherPlayerState(player);
+        otherPlayerState.session.getRemote().sendString(json);
     }
 }

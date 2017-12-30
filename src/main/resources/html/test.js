@@ -65,3 +65,14 @@ socket.onmessage = function(event) {
     }
 };
 
+function sendPlaceMana(hand_position) {
+    // Construct a msg object containing the data the server needs to process the message from the chat client.
+    var msg = {
+        in_game: true,
+        type: "place_mana",
+        hand_position: hand_position
+    };
+    // Send the msg object as a JSON-formatted string.
+    socket.send(JSON.stringify(msg));
+}
+
