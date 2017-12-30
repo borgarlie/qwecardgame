@@ -1,11 +1,10 @@
 package GameLogic;
 
 import API.Game.WebSocketEndpoint;
+import Pojos.GameIdAndPlayerId;
 import Pojos.UsernameAndDeckId;
 import Utils.HandleWebSocketType;
 import Utils.ReflectionUtil;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
@@ -111,6 +110,14 @@ public class MenuCommunicationWrapper {
                         session,
                         thisUser,
                         player2deckId);
+                String gameId = mainGameLoop.gameId;
+                GameIdAndPlayerId idPlayer1 = new GameIdAndPlayerId(gameId, MainGameLoop.Player.PLAYER1);
+                GameIdAndPlayerId idPlayer2 = new GameIdAndPlayerId(gameId, MainGameLoop.Player.PLAYER2);
+                // Requesting user is always player 1 and accepting user is always player 2.
+                // Who starts is randomized in MainGameLoop init.
+                WebSocketEndpoint.sessions.put(requestUser, idPlayer1);
+                WebSocketEndpoint.sessions.put(session, idPlayer2);
+                WebSocketEndpoint.games.put(gameId, mainGameLoop);
             } catch (GameError gameError) {
                 gameError.printStackTrace();
                 // TODO: Handle game setup error

@@ -17,6 +17,7 @@ public class GameCommunicationWrapper {
         String type = (String) jsonObject.get(TYPE);
         switch(type) {
             case END_TURN:
+                System.out.println("End turn");
                 gameLoop.endTurn(player);
                 break;
             default:

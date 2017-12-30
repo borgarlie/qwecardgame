@@ -14,13 +14,12 @@ function sendText() {
     socket.send(JSON.stringify(msg));
 }
 
-// Main send function 2 (test)
-// Does not work until game is set up
-function sendText2() {
+// Send end turn
+function sendEndTurn() {
     // Construct a msg object containing the data the server needs to process the message from the chat client.
     var msg = {
         in_game: true,
-        type: "test"
+        type: "end_turn"
     };
     // Send the msg object as a JSON-formatted string.
     socket.send(JSON.stringify(msg));

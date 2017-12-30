@@ -45,7 +45,7 @@ public class PlayerState {
             throw new GameError(INIT_ERROR, "Deck with id: " + deck_id + " not found");
         }
         initialDeck = optDeck.get();
-        if (!initialDeck.getUsername().equals(username)) {
+        if (!initialDeck.getUsername().equals(username) && !initialDeck.getUsername().equals("standard")) {
             throw new GameError(INIT_ERROR, "Deck does not belong to this user");
         }
         initPlayerState();
