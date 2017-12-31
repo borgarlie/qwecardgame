@@ -29,6 +29,9 @@ public class MainGameLoop {
     public static final String SHIELD_TRIGGER = "shield_trigger";
     public static final String USE_BLOCKER = "USE_BLOCKER";
     public static final String CARD_DIES = "card_dies";
+    public static final String ATTACKING_WITH_POSITION = "attacking_with_position";
+    public static final String ATTACKING_POSITION = "attacking_position";
+    public static final String ATTACK_CREATURE = "attack_creature";
 
     public enum Player {
         PLAYER1, PLAYER2
@@ -43,6 +46,7 @@ public class MainGameLoop {
     private boolean shieldTriggerInteractionActive = false;
     private boolean blockerInteractionActive = false;
     private int attackingCreatureBattleZonePosition = -1;
+    private int attackedCreatureBattleZonePosition = -1;
 
     public MainGameLoop(Session player1sessision, String player1Username, int player1DeckId,
                         Session player2session, String player2Username, int player2DeckId)
@@ -170,6 +174,8 @@ public class MainGameLoop {
             // Requires additional interaction before moving on
             String json = new JSONObject()
                     .put(TYPE, BLOCKER_INTERACTION)
+                    .put(ATTACKING_WITH_POSITION, battleZonePosition)
+                    .put(ATTACKING_POSITION, -1) // -1 = player in this case
                     .toString();
             currentPlayerState.session.getRemote().sendString(json);
             otherPlayerState.session.getRemote().sendString(json);
@@ -177,6 +183,71 @@ public class MainGameLoop {
             return;
         }
         continueAttackingPlayer(player);
+    }
+
+    public void attackCreature(Player player, int battleZonePosition, int attackCreatureInPosition)
+            throws GameError, IOException {
+        if (!isAllowedToMakeAMove(player)) {
+            throw new GameError(NOT_ALLOWED, "Not allowed to attack player when it is not your turn");
+        }
+        PlayerState otherPlayerState = getOtherPlayerState(player);
+        Card attackedCreatureCard = otherPlayerState.getCardInBattleZonePosition(attackCreatureInPosition);
+        PlayerState currentPlayerState = getCurrentPlayerState(player);
+        Card attackCard = currentPlayerState.canAttackCreature(battleZonePosition, attackedCreatureCard);
+        // TODO: Also -> If attackCard has effect "can not be blocked" -> continue
+        if (otherPlayerState.has_blocker()) {
+            attackingCreatureBattleZonePosition = battleZonePosition;
+            attackedCreatureBattleZonePosition = attackCreatureInPosition;
+            // Requires additional interaction before moving on
+            String json = new JSONObject()
+                    .put(TYPE, BLOCKER_INTERACTION)
+                    .put(ATTACKING_WITH_POSITION, battleZonePosition)
+                    .put(ATTACKING_POSITION, attackCreatureInPosition)
+                    .toString();
+            currentPlayerState.session.getRemote().sendString(json);
+            otherPlayerState.session.getRemote().sendString(json);
+            blockerInteractionActive = true;
+            return;
+        }
+        continueAttackingCreature(player, battleZonePosition, attackCreatureInPosition);
+    }
+
+    private void continueAttackingCreature(Player player, int battleZonePosition, int attackCreatureInPosition)
+            throws IOException {
+        PlayerState currentPlayerState = getCurrentPlayerState(player);
+        PlayerState otherPlayerState = getOtherPlayerState(player);
+        Card attackedCreatureCard = otherPlayerState.getCardInBattleZonePosition(attackCreatureInPosition);
+        Card attackingCard = currentPlayerState.getCardInBattleZonePosition(battleZonePosition);
+        int outcome = attackingCard.fight(attackedCreatureCard);
+        String cardLivesJson = new JSONObject()
+                .put(TYPE, ATTACK_CREATURE)
+                .put(CARD_DIES, false)
+                .toString();
+        String cardDiesJson = new JSONObject()
+                .put(TYPE, ATTACK_CREATURE)
+                .put(CARD_DIES, true)
+                .toString();
+        switch (outcome) {
+            case 1:
+                // Attacker wins
+                otherPlayerState.killCardInBattlezone(attackCreatureInPosition);
+                currentPlayerState.session.getRemote().sendString(cardLivesJson);
+                otherPlayerState.session.getRemote().sendString(cardDiesJson);
+                break;
+            case -1:
+                // Attacked Creature wins
+                currentPlayerState.killCardInBattlezone(battleZonePosition);
+                currentPlayerState.session.getRemote().sendString(cardDiesJson);
+                otherPlayerState.session.getRemote().sendString(cardLivesJson);
+                break;
+            default:
+                // Draw - both dies
+                currentPlayerState.killCardInBattlezone(battleZonePosition);
+                otherPlayerState.killCardInBattlezone(attackCreatureInPosition);
+                currentPlayerState.session.getRemote().sendString(cardDiesJson);
+                otherPlayerState.session.getRemote().sendString(cardDiesJson);
+                break;
+        }
     }
 
     private void continueAttackingPlayer(Player player) throws IOException {
@@ -219,7 +290,17 @@ public class MainGameLoop {
             // Need to switch the player, as it is not the blocking player,
             // but the other player that initiated the attack
             player = getOtherPlayer(player);
-            continueAttackingPlayer(player);
+            // Check if we are attacking creature or player
+            if (this.attackedCreatureBattleZonePosition > -1) {
+                // attacking creature
+                continueAttackingCreature(player, attackingCreatureBattleZonePosition, attackedCreatureBattleZonePosition);
+                attackingCreatureBattleZonePosition = -1; // reset global value
+                attackedCreatureBattleZonePosition = -1; // reset global value
+            }
+            else {
+                // attacking player
+                continueAttackingPlayer(player);
+            }
             blockerInteractionActive = false; // reset global value
             return;
         }
@@ -230,7 +311,7 @@ public class MainGameLoop {
             throw new GameError(NOT_ALLOWED, "This card is not a blocker");
         }
         Card attackingCard = otherPlayerState.getCardInBattleZonePosition(attackingCreatureBattleZonePosition);
-        int outcome = currentPlayerState.useBlocker(blockingCard, attackingCard);
+        int outcome = blockingCard.fight(attackingCard);
         String cardLivesJson = new JSONObject()
                 .put(TYPE, USE_BLOCKER)
                 .put(CARD_DIES, false)
@@ -262,6 +343,7 @@ public class MainGameLoop {
         }
         // TODO: What to do about effects on blocker cards and attacking cards?
         attackingCreatureBattleZonePosition = -1; // reset global value
+        attackedCreatureBattleZonePosition = -1; // reset global value
         blockerInteractionActive = false; // reset global value
     }
 
@@ -292,4 +374,5 @@ public class MainGameLoop {
         otherPlayerState.session.getRemote().sendString(json);
         attackingCreatureBattleZonePosition = -1; // reset global value
     }
+
 }

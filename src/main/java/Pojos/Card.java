@@ -27,6 +27,8 @@ public class Card {
     // If we do this, we can check for effect ENUM and manually handle each effect
     // This also applies for spells, as all spells are compositions of 1 or more effects
 
+    // should cards have "temporal effects" that get reset every new turn? or end of turn
+
     int mana_cost;
     int power;
     int power_attacker;
@@ -47,6 +49,19 @@ public class Card {
 
     public int getTotalAttackingPower() {
         return this.power + this.power_attacker;
+    }
+
+    /*
+        +1 = this player wins, -1 = this player looses, 0 is draw (both dies).
+     */
+    public int fight(Card otherPlayersCard) {
+        if (this.getTotalAttackingPower() > otherPlayersCard.getTotalAttackingPower()) {
+            return 1;
+        }
+        else if (this.getTotalAttackingPower() < otherPlayersCard.getTotalAttackingPower()) {
+            return -1;
+        }
+        return 0;
     }
 
     public JSONObject toJson() {

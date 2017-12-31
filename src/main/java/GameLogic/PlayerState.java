@@ -214,31 +214,36 @@ public class PlayerState {
     public Card getCardInBattleZonePosition(int battleZonePosition) {
         return this.battlezone.get(battleZonePosition).toBuilder().build();
     }
-    /*
-        +1 = this player wins, -1 = this player looses, 0 is draw (both dies).
-     */
-    public int useBlocker(Card thisPlayersCard, Card otherPlayersCard) {
-        if (thisPlayersCard.getTotalAttackingPower() > otherPlayersCard.getTotalAttackingPower()) {
-            return 1;
-        }
-        else if (thisPlayersCard.getTotalAttackingPower() < otherPlayersCard.getTotalAttackingPower()) {
-            return -1;
-        }
-        return 0;
-    }
 
-    /*
-        Can be used after blocker has defeated a monster that should be killed
-     */
     public void killCardInBattlezone(int battleZonePosition) {
+        Card card = getCardInBattleZonePosition(battleZonePosition);
         this.battlezone.remove(battleZonePosition);
+        this.graveyard.add(card);
     }
 
-    public Card attackCreature(int battleZonePosition) {
+    public Card canAttackCreature(int battleZonePosition, Card attackedCreature) throws GameError {
         // TODO: Implement this
         // Can only attack tapped creatures unless the attacking creature
         // has the spell effect "can attack untapped creatures"
-        return null;
+        if (battleZonePosition >= this.battlezone.size()) {
+            throw new GameError(NOT_ENOUGH_CARDS, "You do not have that many cards in the battle zone");
+        }
+        Card card = this.battlezone.get(battleZonePosition).toBuilder().build();
+        if (!card.isCan_attack_creature()) {
+            throw new GameError(NOT_ALLOWED, "That card can not attack players");
+        }
+        if (card.isSummoningSickness()) {
+            throw new GameError(SUMMONING_SICKNESS, "That card has summoning sickness");
+        }
+        if (card.isTapped()) {
+            throw new GameError(ALREADY_TAPPED, "That card is already tapped");
+        }
+        // check attackedCreature
+        // TODO: Unless attacking creature has effect "can attack untapped creatures".
+        if (!attackedCreature.isTapped()) {
+            throw new GameError(NOT_ALLOWED, "Can not attack untapped creatures");
+        }
+        return card;
     }
 
     public Card useSpellCard(int handPosition) {

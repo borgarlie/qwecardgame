@@ -24,8 +24,12 @@ public class GameCommunicationWrapper {
     public static final String PLACE_MANA = "place_mana";
     public static final String ADD_TO_BATTLEZONE = "add_to_battlezone";
     public static final String HAND_POSITION = "hand_position";
+    public static final String BATTLE_ZONE_POSITION = "battle_zone_position";
+    public static final String ATTACK_PLAYER = "attack_player";
+    public static final String ATTACK_CREATURE = "attack_creature";
     public static final String USE_SHIELD_TRIGGER = "use_shield_trigger";
     public static final String USE_BLOCKER = "use_blocker";
+    public static final String ATTACK_CREATURE_IN_POSITION = "attack_creature_in_position";
 
     public static void handleGameMove(
             JSONObject jsonObject,
@@ -90,6 +94,23 @@ public class GameCommunicationWrapper {
         gameLoop.addToBattleZone(player, handPosition);
     }
 
+    @HandleWebSocketType(ATTACK_PLAYER)
+    public static void handleAttackPlayer(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
+            throws IOException, GameError {
+        System.out.println("Attack player");
+        int battleZonePosition = jsonObject.getInt(BATTLE_ZONE_POSITION);
+        gameLoop.attackPlayer(player, battleZonePosition);
+    }
+
+    @HandleWebSocketType(ATTACK_CREATURE)
+    public static void handleAttackCreature(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
+            throws IOException, GameError {
+        System.out.println("Attack creature");
+        int battleZonePosition = jsonObject.getInt(BATTLE_ZONE_POSITION);
+        int attackCreatureInPosition = jsonObject.getInt(ATTACK_CREATURE_IN_POSITION);
+        gameLoop.attackCreature(player, battleZonePosition, attackCreatureInPosition);
+    }
+
     @HandleWebSocketType(USE_SHIELD_TRIGGER)
     public static void handleShieldTrigger(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
             throws IOException, GameError {
@@ -102,7 +123,9 @@ public class GameCommunicationWrapper {
     public static void handleBlockerInteraction(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
             throws IOException, GameError {
         System.out.println("Blocker interaction");
-        int handPosition = jsonObject.getInt(HAND_POSITION);
-        gameLoop.blockerInteraction(player, handPosition);
+        int battleZonePosition = jsonObject.getInt(BATTLE_ZONE_POSITION);
+        gameLoop.blockerInteraction(player, battleZonePosition);
     }
+
+    // TODO: Implement use spell card
 }
