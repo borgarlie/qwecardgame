@@ -14,7 +14,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-@WebSocket(maxTextMessageSize = 64 * 1024)
+// timeout = 5 minutes
+@WebSocket(maxTextMessageSize = 64 * 1024, maxIdleTime = 1000 * 60 * 5)
 public class WebSocketEndpoint {
 
     // Messages used in the menu

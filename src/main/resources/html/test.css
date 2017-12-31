@@ -1,0 +1,18 @@
+
+#gameboard {
+    background-color: red;
+    width: 800px;
+    height: 700px;
+}
+
+#other_players_side {
+    background-color: orange;
+    width: 800px;
+    height: 350px;
+}
+
+#this_players_side {
+    background-color: yellow;
+    width: 800px;
+    height: 350px;
+}

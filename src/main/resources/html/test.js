@@ -46,16 +46,33 @@ function sendAcceptRequest(username, accept, deck_id) {
     socket.send(JSON.stringify(msg));
 }
 
+var gameState = {
+    graveyard_cards: 0,
+    deck_cards: 40,
+    battle_zone_cards: 0,
+    shield_cards: 0,
+    mana_zone_cards: 0,
+    hand_cards: 0
+};
+
 // main receive function
 socket.onmessage = function(event) {
     var msg = JSON.parse(event.data);
 
-    console.log(msg)
+    console.log(msg);
 
     switch(msg.type) {
-        case "something":
-            console.log("Something");
-            sendText();
+        case "game_start":
+            console.log("Game start");
+            var start_hand_array = msg.start_hand;
+            size = start_hand_array.length;
+            gameState.hand_cards += size;
+            gameState.deck_cards -= size;
+            // TODO: Should probably use angular or something for binding variables
+            var deck_element = document.getElementById("deck_cards");
+            deck_element.innerHTML = gameState.deck_cards;
+            var hand_element = document.getElementById("hand_cards");
+            hand_element.innerHTML = gameState.hand_cards;
             break;
         default:
             console.log("Default");

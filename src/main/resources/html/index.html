@@ -1,9 +1,35 @@
 <html>
 <head>
     <title>Test web app</title>
+    <link rel="stylesheet" href="test.css">
 </head>
 <body>
-    Test test
     <script src="test.js" type="text/javascript"></script>
+    <div id="gameboard">
+        <div id="other_players_side">
+            Other player
+        </div>
+        <div id="this_players_side">
+            This player
+            <div id="graveyard">
+                Graveyard cards <span id="graveyard_cards">0</span>
+            </div>
+            <div id="deck">
+                Deck cards <span id="deck_cards">40</span>
+            </div>
+            <div id="battle_zone">
+                Battle zone cards <span id="battle_zone_cards">0</span>
+            </div>
+            <div id="shields">
+                Shield cards <span id="shield_cards">0</span>
+            </div>
+            <div id="mana_zone">
+                Mana zone cards <span id="mana_zone_cards">0</span>
+            </div>
+            <div id="hand">
+                Hand cards <span id="hand_cards">0</span>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

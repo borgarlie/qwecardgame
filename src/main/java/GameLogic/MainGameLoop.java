@@ -256,7 +256,10 @@ public class MainGameLoop {
     private void continueAttackingPlayer(Player player) throws IOException {
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         PlayerState otherPlayerState = getOtherPlayerState(player);
+        Card attackingCard = currentPlayerState.getCardInBattleZonePosition(attackingCreatureBattleZonePosition);
         Card shield = otherPlayerState.attackThisPlayer();
+        // TODO: if attackingCard destroys more than 1 shield, then we need to loop this and return multiple shields..
+        // TODO: What if there are multiple shield triggers?
         int battleZonePosition = this.attackingCreatureBattleZonePosition;
         // Requires interaction before moving on
         String json = new JSONObject()
