@@ -74,8 +74,14 @@ public class PlayerState {
         // untap all tapped cards
         untapBattlezone();
         untapManazone();
+        // remove summoning sickness
+        removeSummoningSicknessFromBattleZone();
         // draw new card
         return this.drawCard();
+    }
+
+    private void removeSummoningSicknessFromBattleZone() {
+        this.battlezone.forEach(card -> card.setSummoningSickness(false));
     }
 
     private void untapBattlezone() {
@@ -117,6 +123,9 @@ public class PlayerState {
     public Card addMana(int hand_position) throws GameError {
         if (this.has_added_mana) {
             throw new GameError(NOT_ALLOWED, "Not allowed to add more than 1 mana each turn");
+        }
+        if (hand_position >= this.hand.size()) {
+            throw new GameError(NOT_ENOUGH_CARDS, "You do not have that many cards in your hand");
         }
         this.has_added_mana = true;
         Card card = this.hand.get(hand_position).toBuilder().build();
@@ -217,8 +226,14 @@ public class PlayerState {
 
     public void killCardInBattlezone(int battleZonePosition) {
         Card card = getCardInBattleZonePosition(battleZonePosition);
+        card.setTapped(false); // Card should be untapped when added to graveyard
         this.battlezone.remove(battleZonePosition);
         this.graveyard.add(card);
+    }
+
+    public void tapCreature(int battleZonePosition) {
+        Card card = this.battlezone.get(battleZonePosition);
+        card.setTapped(true);
     }
 
     public Card canAttackCreature(int battleZonePosition, Card attackedCreature) throws GameError {

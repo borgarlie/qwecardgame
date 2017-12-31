@@ -81,3 +81,40 @@ function sendAddToBattleZone(hand_position) {
     socket.send(JSON.stringify(msg));
 }
 
+function sendAttackCreature(battle_zone_position, attack_creature_in_position) {
+    var msg = {
+        in_game: true,
+        type: "attack_creature",
+        battle_zone_position: battle_zone_position,
+        attack_creature_in_position, attack_creature_in_position
+    };
+    socket.send(JSON.stringify(msg));
+}
+
+function sendAttackPlayer(battle_zone_position) {
+    var msg = {
+        in_game: true,
+        type: "attack_player",
+        battle_zone_position: battle_zone_position
+    };
+    socket.send(JSON.stringify(msg));
+}
+
+// -1 = do not block
+function sendUseBlocker(battle_zone_position) {
+    var msg = {
+        in_game: true,
+        type: "use_blocker",
+        battle_zone_position: battle_zone_position
+    };
+    socket.send(JSON.stringify(msg));
+}
+
+function sendShieldTriggerResponse(use_shield_trigger) {
+    var msg = {
+        in_game: true,
+        type: "use_shield_trigger",
+        use_shield_trigger: use_shield_trigger
+    };
+    socket.send(JSON.stringify(msg));
+}

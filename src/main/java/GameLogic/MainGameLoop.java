@@ -87,6 +87,7 @@ public class MainGameLoop {
         if (!isAllowedToMakeAMove(player)) {
             throw new GameError(NOT_ALLOWED, "Not allowed to end turn when it is not your turn");
         }
+        // TODO: If a summoned creature has "must attack" then this is not allowed
         if (player == Player.PLAYER1) {
             turn = Player.PLAYER2;
         } else {
@@ -167,6 +168,7 @@ public class MainGameLoop {
         }
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         Card attackCard = currentPlayerState.canAttackPlayer(battleZonePosition);
+        currentPlayerState.tapCreature(battleZonePosition); // tap attacking creature
         attackingCreatureBattleZonePosition = battleZonePosition;
         PlayerState otherPlayerState = getOtherPlayerState(player);
         // TODO: Also -> If attackCard has effect "can not be blocked" -> continue
@@ -194,6 +196,7 @@ public class MainGameLoop {
         Card attackedCreatureCard = otherPlayerState.getCardInBattleZonePosition(attackCreatureInPosition);
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         Card attackCard = currentPlayerState.canAttackCreature(battleZonePosition, attackedCreatureCard);
+        currentPlayerState.tapCreature(battleZonePosition); // tap attacking creature
         // TODO: Also -> If attackCard has effect "can not be blocked" -> continue
         if (otherPlayerState.has_blocker()) {
             attackingCreatureBattleZonePosition = battleZonePosition;
@@ -312,6 +315,8 @@ public class MainGameLoop {
         }
         Card attackingCard = otherPlayerState.getCardInBattleZonePosition(attackingCreatureBattleZonePosition);
         int outcome = blockingCard.fight(attackingCard);
+        currentPlayerState.tapCreature(battleZonePosition); // tap blocker
+
         String cardLivesJson = new JSONObject()
                 .put(TYPE, USE_BLOCKER)
                 .put(CARD_DIES, false)
