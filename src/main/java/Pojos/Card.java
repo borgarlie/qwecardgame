@@ -48,6 +48,11 @@ public class Card {
     boolean summoningSickness = false;
 
     public int getTotalAttackingPower() {
+        if (this.isTapped()) {
+            // Tapped creatures do not "power attacker"
+            // Could also implement this as only getting total on attacking creature and not the one getting attacked
+            return this.power;
+        }
         return this.power + this.power_attacker;
     }
 

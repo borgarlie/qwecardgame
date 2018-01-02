@@ -250,7 +250,6 @@ public class PlayerState {
     }
 
     public Card canAttackCreature(int battleZonePosition, Card attackedCreature) throws GameError {
-        // TODO: Implement this
         // Can only attack tapped creatures unless the attacking creature
         // has the spell effect "can attack untapped creatures"
         if (battleZonePosition >= this.battlezone.size()) {

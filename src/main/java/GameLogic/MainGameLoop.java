@@ -7,6 +7,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static GameLogic.GameError.ErrorCode.NOT_ALLOWED;
 
@@ -58,10 +60,10 @@ public class MainGameLoop {
     private void initGame(Session player1session, String player1Username, int player1DeckId,
                          Session player2session, String player2Username, int player2DeckId)
             throws GameError, IOException {
-        this.gameId = "123abc"; // TODO: Randomize this
+        this.gameId = this.getRandomGameId();
         this.player1state = new PlayerState(MainGameLoop.Player.PLAYER1, player1session, player1Username, player1DeckId);
         this.player2state = new PlayerState(MainGameLoop.Player.PLAYER2, player2session, player2Username, player2DeckId);
-        this.turn = Player.PLAYER1; // TODO: Randomize this
+        this.turn = this.getRandomPlayer();
         // sending game start to both players with initial hand
         String gameStartPlayer1 = new JSONObject()
                 .put(TYPE, GAME_START)
@@ -73,11 +75,31 @@ public class MainGameLoop {
                 .put(START_HAND, player2state.hand)
                 .toString();
         player2session.getRemote().sendString(gameStartPlayer2);
-        // manually sending new turn to player1, but no card (should be sent to "turn" player)
+        // Send new turn without drawing card to start player
         String json = new JSONObject()
                 .put(TYPE, NEW_TURN)
                 .toString();
-        player1session.getRemote().sendString(json);
+        Session currentPlayerSession = getCurrentTurnPlayerSession();
+        currentPlayerSession.getRemote().sendString(json);
+    }
+
+    private Session getCurrentTurnPlayerSession() {
+        if (turn == Player.PLAYER1) {
+            return player1state.session;
+        }
+        return player2state.session;
+    }
+
+    private String getRandomGameId() {
+        return UUID.randomUUID().toString();
+    }
+
+    private Player getRandomPlayer() {
+        boolean random = ThreadLocalRandom.current().nextBoolean();
+        if (random) {
+            return Player.PLAYER2;
+        }
+        return Player.PLAYER1;
     }
 
     public boolean isAllowedToMakeAMove(Player player) {
