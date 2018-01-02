@@ -6,6 +6,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static GameLogic.GameError.ErrorCode.NOT_ALLOWED;
 
@@ -87,7 +88,16 @@ public class MainGameLoop {
         if (!isAllowedToMakeAMove(player)) {
             throw new GameError(NOT_ALLOWED, "Not allowed to end turn when it is not your turn");
         }
-        // TODO: If a summoned creature has "must attack" then this is not allowed
+        // If a summoned creature has "must attack" and has not attacked then the player is not allowed to end the turn
+        // Unless the creature is already tapped or has summoning creature
+        PlayerState currentPlayerState = getCurrentPlayerState(player);
+        Optional<Card> mustAttackCard = currentPlayerState.hasUntappedMustAttackCreature();
+        if (mustAttackCard.isPresent()) {
+            throw new GameError(
+                    NOT_ALLOWED,
+                    "Not allowed to end turn without attacking with " + mustAttackCard.get().getName());
+        }
+        // Change who's turn it is, and start new turn
         if (player == Player.PLAYER1) {
             turn = Player.PLAYER2;
         } else {

@@ -53,12 +53,19 @@ public class Card {
 
     /*
         +1 = this player wins, -1 = this player looses, 0 is draw (both dies).
+        if either card is a slayer and it looses, the other card will also die and return is 0.
      */
     public int fight(Card otherPlayersCard) {
         if (this.getTotalAttackingPower() > otherPlayersCard.getTotalAttackingPower()) {
+            if (otherPlayersCard.isSlayer()) {
+                return 0;
+            }
             return 1;
         }
         else if (this.getTotalAttackingPower() < otherPlayersCard.getTotalAttackingPower()) {
+            if (this.isSlayer()) {
+                return 0;
+            }
             return -1;
         }
         return 0;

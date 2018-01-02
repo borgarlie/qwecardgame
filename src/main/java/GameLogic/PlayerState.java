@@ -147,7 +147,10 @@ public class PlayerState {
         }
         this.hand.remove(hand_position);
         this.tapMana(card.getMana_cost());
-        card.setSummoningSickness(true);
+        // Speed attackers do not get summoning sickness
+        if (!card.isSpeed_attacker()) {
+            card.setSummoningSickness(true);
+        }
         this.battlezone.add(card);
         return card;
     }
@@ -234,6 +237,16 @@ public class PlayerState {
     public void tapCreature(int battleZonePosition) {
         Card card = this.battlezone.get(battleZonePosition);
         card.setTapped(true);
+    }
+
+    // If you have a card with "must attack", and it may attack
+    // (If it does not have summoning sickness, and is not tapped)
+    // Then the player can not end the turn without attacking with this card
+    public Optional<Card> hasUntappedMustAttackCreature() {
+        return this.battlezone.stream()
+                .filter(card -> !card.isSummoningSickness())
+                .filter(card -> !card.isTapped())
+                .findFirst();
     }
 
     public Card canAttackCreature(int battleZonePosition, Card attackedCreature) throws GameError {
