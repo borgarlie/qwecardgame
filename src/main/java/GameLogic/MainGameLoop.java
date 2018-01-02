@@ -106,6 +106,10 @@ public class MainGameLoop {
         return player == turn;
     }
 
+    // TODO: some effects on cards are triggered when turn ends, e.g. "untap creature at end of turn"
+    // ^ These effects do probably not need to be sent to the players..
+    // they require no interaction and can be handled automatically here and on client side separetely for both players.
+    // Temporal effects needs to be removed at this point.
     public void endTurn(Player player) throws GameError, IOException {
         if (!isAllowedToMakeAMove(player)) {
             throw new GameError(NOT_ALLOWED, "Not allowed to end turn when it is not your turn");
@@ -185,6 +189,12 @@ public class MainGameLoop {
                 .toString();
         PlayerState otherPlayerState = getOtherPlayerState(player);
         otherPlayerState.session.getRemote().sendString(json);
+        // Handle "When you put this creature into the battle zone" effects
+        handleSummonCreatureEffects(player, summonedCreatureCard);
+    }
+
+    private void handleSummonCreatureEffects(Player player, Card summonedCreatureCard) {
+        // TODO: Implement this
     }
 
     /*

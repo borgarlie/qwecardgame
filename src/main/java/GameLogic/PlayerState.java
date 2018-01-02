@@ -209,8 +209,8 @@ public class PlayerState {
         Card shieldTrigger = getLastCardAddedToHand();
         this.hand.remove(this.hand.size() - 1);
         // TODO: Use shield trigger effect
-        // E.g. if creature -> summon to battlezone and possibly use effects
-        // if spell -> use spell.. possibly with interaction
+        // E.g. if creature -> summon to battlezone and possibly use effects (Not included in DM-01)
+        // if spell -> use spell.. possibly with interaction (11 possible in DM-01)
         return shieldTrigger;
     }
 

@@ -3,6 +3,9 @@ package Pojos;
 import lombok.*;
 import org.json.JSONObject;
 
+import java.util.List;
+import java.util.Optional;
+
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -27,7 +30,12 @@ public class Card {
     // If we do this, we can check for effect ENUM and manually handle each effect
     // This also applies for spells, as all spells are compositions of 1 or more effects
 
-    // should cards have "temporal effects" that get reset every new turn? or end of turn
+    // Using NONE enums instead of actual "null" to remove the need for null checks.
+    SpellEffect spellEffect;
+    SummonCreatureEffect summonCreatureEffect;
+    DestroyCreatureEffect destroyCreatureEffect;
+    TempOnAttackEffect tempOnAttackEffect;
+    // TODO: How to add these to cards? Database things ? same name as enum in db ? put NONE if none?
 
     int mana_cost;
     int power;
@@ -42,18 +50,41 @@ public class Card {
     boolean can_attack_creature;
     boolean must_attack;
 
+    // TODO: Impl these in database
+    boolean can_not_be_blocked;
+    boolean can_attack_untapped_creatures;
+    boolean untap_at_end;
+
     // All cards are untapped by default
     boolean isTapped = false;
     // When a card is summoned to the battle zone, it receives summoning sickness
     boolean summoningSickness = false;
 
+    // Temporal effects
+    private int temp_power;
+    private boolean temp_double_breaker;
+    private boolean temp_can_attack_untapped_creatures;
+    private boolean temp_can_not_be_blocked;
+    private boolean temp_slayer_when_blocked;
+
+    // TODO: Call this at end of turn
+    public void removeTemporalEffects() {
+        this.temp_power = 0;
+        this.temp_double_breaker = false;
+        this.temp_can_not_be_blocked = false;
+        this.temp_can_attack_untapped_creatures = false;
+        this.temp_slayer_when_blocked = false;
+    }
+    // TODO: Use these temp things
+    // TODO: How to activate temp power and temp double breaker, etc?
+
     public int getTotalAttackingPower() {
         if (this.isTapped()) {
             // Tapped creatures do not "power attacker"
             // Could also implement this as only getting total on attacking creature and not the one getting attacked
-            return this.power;
+            return this.power + this.temp_power;
         }
-        return this.power + this.power_attacker;
+        return this.power + this.power_attacker + this.temp_power;
     }
 
     /*
@@ -68,7 +99,7 @@ public class Card {
             return 1;
         }
         else if (this.getTotalAttackingPower() < otherPlayersCard.getTotalAttackingPower()) {
-            if (this.isSlayer()) {
+            if (this.isSlayer()) { // TODO: add slayer when blocked, but how do we know?
                 return 0;
             }
             return -1;
