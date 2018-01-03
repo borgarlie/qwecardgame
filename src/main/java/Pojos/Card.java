@@ -46,7 +46,6 @@ public class Card {
     boolean can_attack_creature;
     boolean must_attack;
 
-    // TODO: Use these in MainGameLoop and PlayerState
     boolean can_not_be_blocked;
     boolean can_attack_untapped_creatures;
     boolean untap_at_end;
@@ -59,12 +58,11 @@ public class Card {
 
     // Temporal effects
     private int temp_power;
-    private boolean temp_double_breaker;
+    private boolean temp_double_breaker; // TODO Use
     private boolean temp_can_attack_untapped_creatures;
     private boolean temp_can_not_be_blocked;
     private boolean temp_slayer_when_blocked;
 
-    // TODO: Call this at end of turn
     public void removeTemporalEffects() {
         this.temp_power = 0;
         this.temp_double_breaker = false;
@@ -72,7 +70,6 @@ public class Card {
         this.temp_can_attack_untapped_creatures = false;
         this.temp_slayer_when_blocked = false;
     }
-    // TODO: Use these temp things
     // TODO: How to activate temp power and temp double breaker, etc?
 
     public int getTotalAttackingPower() {
@@ -84,24 +81,42 @@ public class Card {
         return this.power + this.power_attacker + this.temp_power;
     }
 
+    public boolean canBeBlocked() {
+        return !this.can_not_be_blocked && !this.temp_can_not_be_blocked;
+    }
+
+    public boolean canAttackUntappedCreature() {
+        return this.can_attack_untapped_creatures || this.temp_can_attack_untapped_creatures;
+    }
+
     /*
         +1 = this player wins, -1 = this player looses, 0 is draw (both dies).
         if either card is a slayer and it looses, the other card will also die and return is 0.
      */
-    public int fight(Card otherPlayersCard) {
+    public int fight(Card otherPlayersCard, boolean isBlocking) {
         if (this.getTotalAttackingPower() > otherPlayersCard.getTotalAttackingPower()) {
-            if (otherPlayersCard.isSlayer()) {
+            if (otherPlayersCard.isSlayer() || (otherPlayersCard.isTemp_slayer_when_blocked() && isBlocking)) {
+                return 0;
+            }
+            if (this.destroy_on_win) {
                 return 0;
             }
             return 1;
         }
         else if (this.getTotalAttackingPower() < otherPlayersCard.getTotalAttackingPower()) {
-            if (this.isSlayer()) { // TODO: add slayer when blocked, but how do we know?
+            if (this.isSlayer()) {
+                return 0;
+            }
+            if (otherPlayersCard.destroy_on_win) {
                 return 0;
             }
             return -1;
         }
         return 0;
+    }
+
+    public int fight(Card otherPlayersCard) {
+        return fight(otherPlayersCard, false);
     }
 
     public JSONObject toJson() {

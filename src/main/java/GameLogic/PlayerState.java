@@ -80,6 +80,17 @@ public class PlayerState {
         return this.drawCard();
     }
 
+    public void handleEndOfTurnVariables() {
+        this.battlezone.forEach(card -> {
+            // untap cards with effect "untap at end of turn"
+            if (card.isUntap_at_end()) {
+                card.setTapped(false);
+            }
+            // reset temporal variables
+            card.removeTemporalEffects();
+        });
+    }
+
     private void removeSummoningSicknessFromBattleZone() {
         this.battlezone.forEach(card -> card.setSummoningSickness(false));
     }
@@ -265,9 +276,8 @@ public class PlayerState {
         if (card.isTapped()) {
             throw new GameError(ALREADY_TAPPED, "That card is already tapped");
         }
-        // check attackedCreature
-        // TODO: Unless attacking creature has effect "can attack untapped creatures".
-        if (!attackedCreature.isTapped()) {
+        // check attackedCreature is tapped or attacker can attack untapped creature
+        if (!attackedCreature.isTapped() && !card.canAttackUntappedCreature()) {
             throw new GameError(NOT_ALLOWED, "Can not attack untapped creatures");
         }
         return card;

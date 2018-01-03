@@ -123,6 +123,8 @@ public class MainGameLoop {
                     NOT_ALLOWED,
                     "Not allowed to end turn without attacking with " + mustAttackCard.get().getName());
         }
+        // handle end of turn variables
+        currentPlayerState.handleEndOfTurnVariables();
         // Change who's turn it is, and start new turn
         if (player == Player.PLAYER1) {
             turn = Player.PLAYER2;
@@ -213,8 +215,7 @@ public class MainGameLoop {
         currentPlayerState.tapCreature(battleZonePosition); // tap attacking creature
         attackingCreatureBattleZonePosition = battleZonePosition;
         PlayerState otherPlayerState = getOtherPlayerState(player);
-        // TODO: Also -> If attackCard has effect "can not be blocked" -> continue
-        if (otherPlayerState.has_blocker()) {
+        if (attackCard.canBeBlocked() && otherPlayerState.has_blocker()) {
             // Requires additional interaction before moving on
             String json = new JSONObject()
                     .put(TYPE, BLOCKER_INTERACTION)
@@ -239,8 +240,7 @@ public class MainGameLoop {
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         Card attackCard = currentPlayerState.canAttackCreature(battleZonePosition, attackedCreatureCard);
         currentPlayerState.tapCreature(battleZonePosition); // tap attacking creature
-        // TODO: Also -> If attackCard has effect "can not be blocked" -> continue
-        if (otherPlayerState.has_blocker()) {
+        if (attackCard.canBeBlocked() && otherPlayerState.has_blocker()) {
             attackingCreatureBattleZonePosition = battleZonePosition;
             attackedCreatureBattleZonePosition = attackCreatureInPosition;
             // Requires additional interaction before moving on
@@ -359,7 +359,7 @@ public class MainGameLoop {
             throw new GameError(NOT_ALLOWED, "This card is not a blocker");
         }
         Card attackingCard = otherPlayerState.getCardInBattleZonePosition(attackingCreatureBattleZonePosition);
-        int outcome = blockingCard.fight(attackingCard);
+        int outcome = blockingCard.fight(attackingCard, true);
         currentPlayerState.tapCreature(battleZonePosition); // tap blocker
 
         String cardLivesJson = new JSONObject()
