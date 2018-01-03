@@ -19,12 +19,9 @@ public class Card {
     }
 
     int card_id;
-
     String name;
     Type type;
-
     boolean is_spell;
-    boolean has_effects;
 
     // TODO: How to implement effects? Save a list of effects and register them on cards?
     // If we do this, we can check for effect ENUM and manually handle each effect
@@ -35,7 +32,6 @@ public class Card {
     SummonCreatureEffect summonCreatureEffect;
     DestroyCreatureEffect destroyCreatureEffect;
     TempOnAttackEffect tempOnAttackEffect;
-    // TODO: How to add these to cards? Database things ? same name as enum in db ? put NONE if none?
 
     int mana_cost;
     int power;
@@ -50,10 +46,11 @@ public class Card {
     boolean can_attack_creature;
     boolean must_attack;
 
-    // TODO: Impl these in database
+    // TODO: Use these in MainGameLoop and PlayerState
     boolean can_not_be_blocked;
     boolean can_attack_untapped_creatures;
     boolean untap_at_end;
+    boolean destroy_on_win;
 
     // All cards are untapped by default
     boolean isTapped = false;

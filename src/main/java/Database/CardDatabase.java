@@ -1,7 +1,6 @@
 package Database;
 
-import Pojos.Card;
-import Pojos.CardIdWithAmount;
+import Pojos.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -22,35 +21,41 @@ public class CardDatabase {
             Statement stmt  = conn.createStatement();
             ResultSet rs    = stmt.executeQuery(sql);
             while (rs.next()) {
-                boolean has_effects = rs.getBoolean("has_effects");
-                Card card = Card.builder()
-                        .card_id(rs.getInt("card_id"))
-                        .name(rs.getString("name"))
-                        .type(Card.Type.valueOf(rs.getString("type")))
-                        .is_spell(rs.getBoolean("is_spell_card"))
-                        .has_effects(has_effects)
-                        .mana_cost(rs.getInt("mana_cost"))
-                        .power(rs.getInt("power"))
-                        .power_attacker(rs.getInt("power_attacker"))
-                        .blocker(rs.getBoolean("blocker"))
-                        .speed_attacker(rs.getBoolean("speed_attacker"))
-                        .slayer(rs.getBoolean("slayer"))
-                        .shield_trigger(rs.getBoolean("shield_trigger"))
-                        .can_attack_player(rs.getBoolean("can_attack_player"))
-                        .can_attack_creature(rs.getBoolean("can_attack_creature"))
-                        .break_shields(rs.getInt("break_shields"))
-                        .must_attack(rs.getBoolean("must_attack"))
-                        .build();
-                if (has_effects) {
-                    System.out.println("Card has effects");
-                    // TODO: Figure out what to do then.
-                }
+                Card card = buildCardFromResultSet(rs);
                 cards.add(card);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return cards;
+    }
+
+    private static Card buildCardFromResultSet(ResultSet rs) throws SQLException {
+        return Card.builder()
+                .card_id(rs.getInt("card_id"))
+                .name(rs.getString("name"))
+                .type(Card.Type.valueOf(rs.getString("type")))
+                .is_spell(rs.getBoolean("is_spell_card"))
+                .mana_cost(rs.getInt("mana_cost"))
+                .power(rs.getInt("power"))
+                .power_attacker(rs.getInt("power_attacker"))
+                .blocker(rs.getBoolean("blocker"))
+                .speed_attacker(rs.getBoolean("speed_attacker"))
+                .slayer(rs.getBoolean("slayer"))
+                .shield_trigger(rs.getBoolean("shield_trigger"))
+                .can_attack_player(rs.getBoolean("can_attack_player"))
+                .can_attack_creature(rs.getBoolean("can_attack_creature"))
+                .break_shields(rs.getInt("break_shields"))
+                .must_attack(rs.getBoolean("must_attack"))
+                .can_not_be_blocked(rs.getBoolean("can_not_be_blocked"))
+                .can_attack_untapped_creatures(rs.getBoolean("can_attack_untapped_creatures"))
+                .untap_at_end(rs.getBoolean("untap_at_end"))
+                .destroy_on_win(rs.getBoolean("destroy_on_win"))
+                .spellEffect(SpellEffect.valueOfOrNone(rs.getString("spell_effect")))
+                .summonCreatureEffect(SummonCreatureEffect.valueOfOrNone(rs.getString("summon_creature_effect")))
+                .destroyCreatureEffect(DestroyCreatureEffect.valueOfOrNone(rs.getString("destroy_creature_effect")))
+                .tempOnAttackEffect(TempOnAttackEffect.valueOfOrNone(rs.getString("temp_on_attack_effect")))
+                .build();
     }
 
     public static Optional<Card> get(int id) {
@@ -61,29 +66,7 @@ public class CardDatabase {
             pstmt.setInt(1, id);
             ResultSet rs  = pstmt.executeQuery();
             if (rs.next()) {
-                boolean has_effects = rs.getBoolean("has_effects");
-                Card card = Card.builder()
-                        .card_id(rs.getInt("card_id"))
-                        .name(rs.getString("name"))
-                        .type(Card.Type.valueOf(rs.getString("type")))
-                        .is_spell(rs.getBoolean("is_spell_card"))
-                        .has_effects(has_effects)
-                        .mana_cost(rs.getInt("mana_cost"))
-                        .power(rs.getInt("power"))
-                        .power_attacker(rs.getInt("power_attacker"))
-                        .blocker(rs.getBoolean("blocker"))
-                        .speed_attacker(rs.getBoolean("speed_attacker"))
-                        .slayer(rs.getBoolean("slayer"))
-                        .shield_trigger(rs.getBoolean("shield_trigger"))
-                        .can_attack_player(rs.getBoolean("can_attack_player"))
-                        .can_attack_creature(rs.getBoolean("can_attack_creature"))
-                        .break_shields(rs.getInt("break_shields"))
-                        .must_attack(rs.getBoolean("must_attack"))
-                        .build();
-                if (has_effects) {
-                    System.out.println("Card has effects");
-                    // TODO: Figure out what to do then.
-                }
+                Card card = buildCardFromResultSet(rs);
                 return Optional.of(card);
             }
             return Optional.empty();
@@ -123,29 +106,7 @@ public class CardDatabase {
             setPreparedStatementListItems(1, pstmt, cardIdsWithAmount);
             ResultSet rs  = pstmt.executeQuery();
             while (rs.next()) {
-                boolean has_effects = rs.getBoolean("has_effects");
-                Card card = Card.builder()
-                        .card_id(rs.getInt("card_id"))
-                        .name(rs.getString("name"))
-                        .type(Card.Type.valueOf(rs.getString("type")))
-                        .is_spell(rs.getBoolean("is_spell_card"))
-                        .has_effects(has_effects)
-                        .mana_cost(rs.getInt("mana_cost"))
-                        .power(rs.getInt("power"))
-                        .power_attacker(rs.getInt("power_attacker"))
-                        .blocker(rs.getBoolean("blocker"))
-                        .speed_attacker(rs.getBoolean("speed_attacker"))
-                        .slayer(rs.getBoolean("slayer"))
-                        .shield_trigger(rs.getBoolean("shield_trigger"))
-                        .can_attack_player(rs.getBoolean("can_attack_player"))
-                        .can_attack_creature(rs.getBoolean("can_attack_creature"))
-                        .break_shields(rs.getInt("break_shields"))
-                        .must_attack(rs.getBoolean("must_attack"))
-                        .build();
-                if (has_effects) {
-                    System.out.println("Card has effects");
-                    // TODO: Figure out what to do then.
-                }
+                Card card = buildCardFromResultSet(rs);
                 cards.add(card);
             }
         } catch (SQLException e) {
@@ -158,19 +119,12 @@ public class CardDatabase {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//        List<Card> cards = CardDatabase.getAll();
-//        cards.forEach(System.out::println);
-
-//        Card card = get(1).get();
-//        System.out.println(card);
-
         List<CardIdWithAmount> cardIdsWithAmount = new ArrayList<>();
         cardIdsWithAmount.add(new CardIdWithAmount(1, 1));
         cardIdsWithAmount.add(new CardIdWithAmount(2, 3));
         cardIdsWithAmount.add(new CardIdWithAmount(3, 2));
         List<Card> cards = CardDatabase.getByIds(cardIdsWithAmount);
         cards.forEach(System.out::println);
-
         closeConnection();
     }
 }

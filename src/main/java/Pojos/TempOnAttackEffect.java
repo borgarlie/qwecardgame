@@ -10,4 +10,11 @@ public enum TempOnAttackEffect {
     TempOnAttackEffect(String description) {
         this.description = description;
     }
+
+    public static TempOnAttackEffect valueOfOrNone(String value) {
+        if (value == null || value.isEmpty()) {
+            return NONE;
+        }
+        return TempOnAttackEffect.valueOf(value);
+    }
 }

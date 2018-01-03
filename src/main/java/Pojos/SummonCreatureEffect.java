@@ -13,4 +13,11 @@ public enum SummonCreatureEffect {
         this.description = description;
     }
 
+    public static SummonCreatureEffect valueOfOrNone(String value) {
+        if (value == null || value.isEmpty()) {
+            return NONE;
+        }
+        return SummonCreatureEffect.valueOf(value);
+    }
+
 }

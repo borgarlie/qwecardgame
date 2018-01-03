@@ -10,4 +10,11 @@ public enum DestroyCreatureEffect {
     DestroyCreatureEffect(String description) {
         this.description = description;
     }
+
+    public static DestroyCreatureEffect valueOfOrNone(String value) {
+        if (value == null || value.isEmpty()) {
+            return NONE;
+        }
+        return DestroyCreatureEffect.valueOf(value);
+    }
 }

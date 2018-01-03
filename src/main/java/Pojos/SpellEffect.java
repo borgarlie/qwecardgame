@@ -12,4 +12,11 @@ public enum SpellEffect {
         this.description = description;
     }
 
+    public static SpellEffect valueOfOrNone(String value) {
+        if (value == null || value.isEmpty()) {
+            return NONE;
+        }
+        return SpellEffect.valueOf(value);
+    }
+
 }
