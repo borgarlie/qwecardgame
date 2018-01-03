@@ -6,7 +6,8 @@ public enum SummonCreatureEffect {
     NONE ("This card has no summoning effect"),
     RETURN_TWO_OPPONENT_CARDS_TO_HAND ("When you put this creature into the battle zone, " +
             "choose up to 2 creatures in the battle zone and return them to their owners’ hands."),
-    TEST2 ("TESTTEST 2");
+    DESTROY_ALL_BLOCKERS ("When you put this creature into the battle zone, " +
+            "destroy all creatures that have “blocker”");
 
     private final String description;
 

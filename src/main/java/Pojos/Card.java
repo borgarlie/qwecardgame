@@ -15,12 +15,13 @@ import java.util.Optional;
 public class Card {
 
     public enum Type {
-        fire, light, nature, darkness, water
+        FIRE, LIGHT, NATURE, DARKNESS, WATER
     }
 
     int card_id;
     String name;
     Type type;
+    String race;
     boolean is_spell;
 
     // TODO: How to implement effects? Save a list of effects and register them on cards?

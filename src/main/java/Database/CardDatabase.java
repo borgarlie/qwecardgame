@@ -35,6 +35,7 @@ public class CardDatabase {
                 .card_id(rs.getInt("card_id"))
                 .name(rs.getString("name"))
                 .type(Card.Type.valueOf(rs.getString("type")))
+                .race(rs.getString("race"))
                 .is_spell(rs.getBoolean("is_spell_card"))
                 .mana_cost(rs.getInt("mana_cost"))
                 .power(rs.getInt("power"))

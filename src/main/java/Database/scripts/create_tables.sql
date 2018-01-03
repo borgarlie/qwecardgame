@@ -6,6 +6,7 @@ CREATE TABLE cards (
     card_id integer PRIMARY KEY,
     name text NOT NULL UNIQUE,
     type text NOT NULL,
+    race text NOT NULL,
     is_spell_card integer NOT NULL,
     mana_cost integer NOT NULL,
     power integer NOT NULL,
