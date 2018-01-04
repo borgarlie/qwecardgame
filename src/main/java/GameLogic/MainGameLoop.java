@@ -19,23 +19,23 @@ import static GameLogic.GameError.ErrorCode.NOT_ALLOWED;
 public class MainGameLoop {
 
     // These are messages going OUT from the server to players
-    public static final String TYPE = "type";
-    public static final String GAME_START = "game_start";
-    public static final String NEW_TURN = "new_turn";
-    public static final String START_HAND = "start_hand";
-    public static final String DRAWN_CARD = "drawn_card";
-    public static final String PLACED_MANA = "placed_mana";
-    public static final String ADD_TO_BATTLEZONE = "add_to_battlezone";
-    public static final String CHECK_FOR_SHIELD_TRIGGER = "check_for_shield_trigger";
-    public static final String CARD = "card";
-    public static final String ATTACK_WITH_POSITION = "attack_with_position";
-    public static final String BLOCKER_INTERACTION = "blocker_interaction";
-    public static final String SHIELD_TRIGGER = "shield_trigger";
-    public static final String USE_BLOCKER = "USE_BLOCKER";
-    public static final String CARD_DIES = "card_dies";
-    public static final String ATTACKING_WITH_POSITION = "attacking_with_position";
-    public static final String ATTACKING_POSITION = "attacking_position";
-    public static final String ATTACK_CREATURE = "attack_creature";
+    private static final String TYPE = "type";
+    private static final String GAME_START = "game_start";
+    private static final String NEW_TURN = "new_turn";
+    private static final String START_HAND = "start_hand";
+    private static final String DRAWN_CARD = "drawn_card";
+    private static final String PLACED_MANA = "placed_mana";
+    private static final String ADD_TO_BATTLEZONE = "add_to_battlezone";
+    private static final String CHECK_FOR_SHIELD_TRIGGER = "check_for_shield_trigger";
+    private static final String CARD = "card";
+    private static final String ATTACK_WITH_POSITION = "attack_with_position";
+    private static final String BLOCKER_INTERACTION = "blocker_interaction";
+    private static final String SHIELD_TRIGGER = "shield_trigger";
+    private static final String USE_BLOCKER = "USE_BLOCKER";
+    private static final String CARD_DIES = "card_dies";
+    private static final String ATTACKING_WITH_POSITION = "attacking_with_position";
+    private static final String ATTACKING_POSITION = "attacking_position";
+    private static final String ATTACK_CREATURE = "attack_creature";
 
     public enum Player {
         PLAYER1, PLAYER2
@@ -261,7 +261,7 @@ public class MainGameLoop {
     }
 
     private void continueAttackingCreature(Player player, int battleZonePosition, int attackCreatureInPosition)
-            throws IOException {
+            throws IOException, GameError {
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         PlayerState otherPlayerState = getOtherPlayerState(player);
         Card attackedCreatureCard = otherPlayerState.getCardInBattleZonePosition(attackCreatureInPosition);
@@ -298,7 +298,7 @@ public class MainGameLoop {
         }
     }
 
-    private void continueAttackingPlayer(Player player) throws IOException {
+    private void continueAttackingPlayer(Player player) throws IOException, GameError {
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         PlayerState otherPlayerState = getOtherPlayerState(player);
         Card attackingCard = currentPlayerState.getCardInBattleZonePosition(attackingCreatureBattleZonePosition);
@@ -435,13 +435,22 @@ public class MainGameLoop {
             Player player,
             int handPosition,
             List<Integer> useOnOpponentCards,
-            List<Integer> useOnOwnCards) throws GameError {
+            List<Integer> useOnOwnCards) throws GameError, IOException {
         if (!isAllowedToMakeAMove(player)) {
             throw new GameError(NOT_ALLOWED, "Not allowed to use spell card when it is not your turn");
         }
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         Card spellCard = currentPlayerState.canUseSpellCard(handPosition);
-        SpellHandler.handleSpell(player, this, spellCard);
+        // check that all opponent cards and own cards exists in the battle zone
+        PlayerState otherPlayerState = getOtherPlayerState(player);
+        otherPlayerState.getCardInBattleZonePosition(useOnOpponentCards.get(0));
+        for (int battleZonePosition : useOnOpponentCards) {
+            otherPlayerState.getCardInBattleZonePosition(battleZonePosition);
+        }
+        for (int battleZonePosition : useOnOwnCards) {
+            currentPlayerState.getCardInBattleZonePosition(battleZonePosition);
+        }
+        SpellHandler.handleSpell(player, this, spellCard, useOnOpponentCards, useOnOwnCards);
     }
 
 }

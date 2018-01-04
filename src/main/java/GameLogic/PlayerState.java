@@ -235,11 +235,14 @@ public class PlayerState {
         return this.hand.get(handPosition).toBuilder().build();
     }
 
-    public Card getCardInBattleZonePosition(int battleZonePosition) {
+    public Card getCardInBattleZonePosition(int battleZonePosition) throws GameError {
+        if (this.battlezone.size() <= battleZonePosition) {
+            throw new GameError(NOT_ENOUGH_CARDS, "There are not that many cards in the battle zone");
+        }
         return this.battlezone.get(battleZonePosition).toBuilder().build();
     }
 
-    public void killCardInBattlezone(int battleZonePosition) {
+    public void killCardInBattlezone(int battleZonePosition) throws GameError {
         Card card = getCardInBattleZonePosition(battleZonePosition);
         card.setTapped(false); // Card should be untapped when added to graveyard
         this.battlezone.remove(battleZonePosition);
