@@ -3,8 +3,7 @@ package Pojos;
 public enum SpellEffect {
 
     NONE ("This card has no spell effect"),
-    TEST1 ("THIS IS A TEST"),
-    TEST2 ("TESTTEST 2");
+    TAP_ALL_OPPONENT_CREATURES ("Tap all your opponent’s creatures in the battle zone.");
 
     private final String description;
 
@@ -12,7 +11,7 @@ public enum SpellEffect {
         this.description = description;
     }
 
-    public static SpellEffect valueOfOrNone(String value) {
+    public SpellEffect valueOfOrNone(String value) {
         if (value == null || value.isEmpty()) {
             return NONE;
         }

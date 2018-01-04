@@ -1,6 +1,142 @@
 
 -- DM-01 Base set
 
+-- 1 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Chilias, the Oracle', "LIGHT", "Light Bringer", 0,
+    4, 2500, 0, 0,
+    0, 0, 0, 1,
+    1, 1, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'RETURN_TO_HAND', 'NONE');
+
+-- 2 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Dia Nork, Moonlight Guardian', "LIGHT", "Guardian", 0,
+    4, 5000, 0, 1,
+    0, 0, 0, 0,
+    1, 0, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
+
+-- 3 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Emerald Grass', "LIGHT", "Starlight Tree", 0,
+    2, 3000, 0, 1,
+    0, 0, 0, 0,
+    1, 0, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
+
+-- 4 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Frei, Vizier of Air', "LIGHT", "Initiate", 0,
+    4, 3000, 0, 0,
+    0, 0, 0, 1,
+    1, 1, 0,
+    0, 0, 1, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
+
+-- 5 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Gran Gure, Space Guardian', "LIGHT", "Guardian", 0,
+    6, 9000, 0, 1,
+    0, 0, 0, 0,
+    1, 0, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
+
+
+-- 6 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Holy Awe', "LIGHT", "NONE", 1,
+    6, 0, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0,
+    0, 0, 0, 0,
+    'TAP_ALL_OPPONENT_CREATURES', 'NONE', 'NONE', 'NONE');
+
+-- 7 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Iere, Vizier of Bullets', "LIGHT", "Initiate", 0,
+    3, 3000, 0, 0,
+    0, 0, 0, 1,
+    1, 1, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
+
+-- 8 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Iocant, the Oracle', "LIGHT", "Light Bringer", 0,
+    2, 2000, 0, 1,
+    0, 0, 0, 0,
+    1, 0, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'NONE', 'PLUS_POWER_ANGEL_COMMAND');
+
+
+-- Immoral baron, Vorg
+-- Brawler zyler
+-- La ura giga
+-- stonesaur
+-- phantom fish
+
 --card id =
 INSERT INTO cards
     (name, type, race, is_spell_card,

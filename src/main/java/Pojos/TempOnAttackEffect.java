@@ -2,8 +2,8 @@ package Pojos;
 
 public enum TempOnAttackEffect {
     NONE ("This card has no temporal on attack effect"),
-    TEST1 ("THIS IS A TEST"),
-    TEST2 ("TESTTEST 2");
+    PLUS_POWER_ANGEL_COMMAND ("While you have at least 1 Angel Command in the battle zone, " +
+            "this creature gets +2000 power.");
 
     private final String description;
 

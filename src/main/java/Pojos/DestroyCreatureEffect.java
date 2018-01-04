@@ -2,8 +2,7 @@ package Pojos;
 
 public enum DestroyCreatureEffect {
     NONE ("This card has no destroy effect"),
-    TEST1 ("THIS IS A TEST"),
-    TEST2 ("TESTTEST 2");
+    RETURN_TO_HAND ("When this creature would be destroyed, return it to your hand instead.");
 
     private final String description;
 
