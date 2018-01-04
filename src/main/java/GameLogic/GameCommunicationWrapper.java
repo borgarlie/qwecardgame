@@ -18,22 +18,22 @@ public class GameCommunicationWrapper {
             = ReflectionUtil.findWebSocketTypeMethods(GameCommunicationWrapper.class, HandleWebSocketType.class);
 
     // These are messages received from the players
-    public static final String TYPE = "type";
-    public static final String END_TURN = "end_turn";
-    public static final String ERROR = "error";
-    public static final String ECHO = "echo";
-    public static final String PLACE_MANA = "place_mana";
-    public static final String ADD_TO_BATTLEZONE = "add_to_battlezone";
-    public static final String HAND_POSITION = "hand_position";
-    public static final String BATTLE_ZONE_POSITION = "battle_zone_position";
-    public static final String ATTACK_PLAYER = "attack_player";
-    public static final String ATTACK_CREATURE = "attack_creature";
-    public static final String USE_SHIELD_TRIGGER = "use_shield_trigger";
-    public static final String USE_BLOCKER = "use_blocker";
-    public static final String ATTACK_CREATURE_IN_POSITION = "attack_creature_in_position";
-    public static final String USE_SPELL = "use_spell";
-    public static final String USE_ON_OWN_CARDS = "use_on_own_cards"; // list
-    public static final String USE_ON_OPPONENT_CARDS = "use_on_opponent_cards"; // list
+    private static final String TYPE = "type";
+    private static final String END_TURN = "end_turn";
+    private static final String ERROR = "error";
+    private static final String ECHO = "echo";
+    private static final String PLACE_MANA = "place_mana";
+    private static final String ADD_TO_BATTLEZONE = "add_to_battlezone";
+    private static final String HAND_POSITION = "hand_position";
+    private static final String BATTLE_ZONE_POSITION = "battle_zone_position";
+    private static final String ATTACK_PLAYER = "attack_player";
+    private static final String ATTACK_CREATURE = "attack_creature";
+    private static final String USE_SHIELD_TRIGGER = "use_shield_trigger";
+    private static final String USE_BLOCKER = "use_blocker";
+    private static final String ATTACK_CREATURE_IN_POSITION = "attack_creature_in_position";
+    private static final String USE_SPELL = "use_spell";
+    private static final String USE_ON_OWN_CARDS = "use_on_own_cards"; // list
+    private static final String USE_ON_OPPONENT_CARDS = "use_on_opponent_cards"; // list
 
     public static void handleGameMove(
             JSONObject jsonObject,

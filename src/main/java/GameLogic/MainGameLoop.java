@@ -443,7 +443,6 @@ public class MainGameLoop {
         Card spellCard = currentPlayerState.canUseSpellCard(handPosition);
         // check that all opponent cards and own cards exists in the battle zone
         PlayerState otherPlayerState = getOtherPlayerState(player);
-        otherPlayerState.getCardInBattleZonePosition(useOnOpponentCards.get(0));
         for (int battleZonePosition : useOnOpponentCards) {
             otherPlayerState.getCardInBattleZonePosition(battleZonePosition);
         }

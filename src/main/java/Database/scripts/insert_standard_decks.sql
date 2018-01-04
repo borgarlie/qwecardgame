@@ -83,14 +83,14 @@ INSERT INTO decks
 INSERT INTO deck_card
     (deck_id, card_id, amount)
     VALUES
-    (3, 6, 4);
+    (3, 6, 10);
 
 INSERT INTO deck_card
     (deck_id, card_id, amount)
     VALUES
-    (3, 11, 4);
+    (3, 11, 10);
 
 INSERT INTO deck_card
     (deck_id, card_id, amount)
     VALUES
-    (3, 14, 4);
+    (3, 14, 10);

@@ -259,6 +259,7 @@ public class PlayerState {
     // Then the player can not end the turn without attacking with this card
     public Optional<Card> hasUntappedMustAttackCreature() {
         return this.battlezone.stream()
+                .filter(Card::isMust_attack)
                 .filter(card -> !card.isSummoningSickness())
                 .filter(card -> !card.isTapped())
                 .findFirst();

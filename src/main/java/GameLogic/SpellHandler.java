@@ -61,10 +61,15 @@ public class SpellHandler {
             MainGameLoop mainGameLoop,
             Card spellCard,
             List<Integer> useOnOpponentCards,
-            List<Integer> useOnOwnCards) {
+            List<Integer> useOnOwnCards) throws IOException {
         System.out.println("Using spell effect TAP_ALL_OPPONENT_CREATURES");
-        PlayerState currentPlayerState = mainGameLoop.getCurrentPlayerState(currentPlayer);
         PlayerState otherPlayerState = mainGameLoop.getOtherPlayerState(currentPlayer);
+        // Tap all of opponent's creatures
+        for (int i = 0; i < otherPlayerState.battlezone.size(); i++) {
+            otherPlayerState.tapCreature(i);
+        }
+        // Send json to other player
+        sendJsonMessageToOtherPlayer(currentPlayer, mainGameLoop, spellCard, useOnOpponentCards, useOnOwnCards);
     }
 
     @HandleSpellEffect(TEMP_CANT_BLOCK_X2)
@@ -73,10 +78,20 @@ public class SpellHandler {
             MainGameLoop mainGameLoop,
             Card spellCard,
             List<Integer> useOnOpponentCards,
-            List<Integer> useOnOwnCards) {
+            List<Integer> useOnOwnCards) throws GameError, IOException {
+        if (useOnOwnCards.size() > 2) {
+            throw new GameError(
+                    GameError.ErrorCode.NOT_ALLOWED,
+                    "Can not use spell effect " + TEMP_CANT_BLOCK_X2 + " on more than 2 creatures");
+        }
         System.out.println("Using spell effect TEMP_CANT_BLOCK_X2");
         PlayerState currentPlayerState = mainGameLoop.getCurrentPlayerState(currentPlayer);
-        PlayerState otherPlayerState = mainGameLoop.getOtherPlayerState(currentPlayer);
+        useOnOwnCards.forEach(battleZonePosition -> {
+            Card card = currentPlayerState.battlezone.get(battleZonePosition);
+            card.setTemp_can_not_be_blocked(true);
+        });
+        // Send json to other player
+        sendJsonMessageToOtherPlayer(currentPlayer, mainGameLoop, spellCard, useOnOpponentCards, useOnOwnCards);
     }
 
     @HandleSpellEffect(TAP_TWO_OPPONENT_CREATURES)
