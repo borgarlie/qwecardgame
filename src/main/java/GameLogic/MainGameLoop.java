@@ -6,6 +6,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -151,14 +152,16 @@ public class MainGameLoop {
         return Player.PLAYER1;
     }
 
-    private PlayerState getCurrentPlayerState(Player player) {
+    // package-private
+    PlayerState getCurrentPlayerState(Player player) {
         if (player == Player.PLAYER1) {
             return player1state;
         }
         return player2state;
     }
 
-    private PlayerState getOtherPlayerState(Player player) {
+    // package-private
+    PlayerState getOtherPlayerState(Player player) {
         if (player == Player.PLAYER1) {
             return player2state;
         }
@@ -397,6 +400,9 @@ public class MainGameLoop {
         blockerInteractionActive = false; // reset global value
     }
 
+    // TODO: Should be possible to call this twice. e.g use "num_shield_triggers"
+    // Also need to make it possible to choose which one to use first and last if there are multiple
+    // (could be 0, 1, 2 or 3)
     public void shieldTriggerInteraction(Player player, boolean useShieldTrigger)
             throws GameError, IOException {
         if (!shieldTriggerInteractionActive) {
@@ -423,6 +429,19 @@ public class MainGameLoop {
                 .toString();
         otherPlayerState.session.getRemote().sendString(json);
         attackingCreatureBattleZonePosition = -1; // reset global value
+    }
+
+    public void useSpellCard(
+            Player player,
+            int handPosition,
+            List<Integer> useOnOpponentCards,
+            List<Integer> useOnOwnCards) throws GameError {
+        if (!isAllowedToMakeAMove(player)) {
+            throw new GameError(NOT_ALLOWED, "Not allowed to use spell card when it is not your turn");
+        }
+        PlayerState currentPlayerState = getCurrentPlayerState(player);
+        Card spellCard = currentPlayerState.canUseSpellCard(handPosition);
+        SpellHandler.handleSpell(player, this, spellCard);
     }
 
 }

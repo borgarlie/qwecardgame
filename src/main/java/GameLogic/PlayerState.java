@@ -54,6 +54,7 @@ public class PlayerState {
     private void initPlayerState() {
         // Initialise deck
         this.deck = initialDeck.initialiseDeck();
+        // TODO: Add check that deck size is correct (40 exact?)
         // Shuffle deck
         this.shuffleDeck();
         // Initialize shields
@@ -283,10 +284,20 @@ public class PlayerState {
         return card;
     }
 
-    public Card useSpellCard(int handPosition) {
-        // TODO: Implement this
-        // Probably gonna involve some complex logic
-        return null;
+    public Card canUseSpellCard(int handPosition) throws GameError {
+        if (handPosition >= this.hand.size()) {
+            throw new GameError(NOT_ENOUGH_CARDS, "You do not have that many cards in your hand");
+        }
+        Card card = this.hand.get(handPosition).toBuilder().build();
+        if (!card.is_spell()) {
+            throw new GameError(WRONG_CARD_TYPE, "This is not a spell card");
+        }
+        if (card.getMana_cost() > getRemainingMana()) {
+            throw new GameError(NOT_ENOUGH_MANA, "Not enough mana");
+        }
+        this.hand.remove(handPosition);
+        this.tapMana(card.getMana_cost());
+        return card;
     }
 
     public static void main(String[] args) throws GameError {

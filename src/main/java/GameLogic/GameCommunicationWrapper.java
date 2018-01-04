@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class GameCommunicationWrapper {
@@ -30,6 +31,9 @@ public class GameCommunicationWrapper {
     public static final String USE_SHIELD_TRIGGER = "use_shield_trigger";
     public static final String USE_BLOCKER = "use_blocker";
     public static final String ATTACK_CREATURE_IN_POSITION = "attack_creature_in_position";
+    public static final String USE_SPELL = "use_spell";
+    public static final String USE_ON_OWN_CARDS = "use_on_own_cards"; // list
+    public static final String USE_ON_OPPONENT_CARDS = "use_on_opponent_cards"; // list
 
     public static void handleGameMove(
             JSONObject jsonObject,
@@ -127,5 +131,15 @@ public class GameCommunicationWrapper {
         gameLoop.blockerInteraction(player, battleZonePosition);
     }
 
-    // TODO: Implement use spell card
+    @HandleWebSocketType(USE_SPELL)
+    public static void handleSpellCard(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
+            throws IOException, GameError {
+        System.out.println("Spell card used");
+        int handPosition = jsonObject.getInt(HAND_POSITION);
+        ArrayList<Integer> useOnOpponentCards = new ArrayList<>();
+        jsonObject.getJSONArray(USE_ON_OPPONENT_CARDS).forEach(position -> useOnOpponentCards.add((int)position));
+        ArrayList<Integer> useOnOwnCards = new ArrayList<>();
+        jsonObject.getJSONArray(USE_ON_OWN_CARDS).forEach(position -> useOnOwnCards.add((int)position));
+        gameLoop.useSpellCard(player, handPosition, useOnOpponentCards, useOnOwnCards);
+    }
 }

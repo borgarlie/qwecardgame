@@ -135,3 +135,14 @@ function sendShieldTriggerResponse(use_shield_trigger) {
     };
     socket.send(JSON.stringify(msg));
 }
+
+function sendUseSpellCard(hand_position, opponent_cards, own_cards) {
+    var msg = {
+        in_game: true,
+        type: "use_spell",
+        hand_position: hand_position,
+        use_on_opponent_cards: opponent_cards,
+        use_on_own_cards: own_cards
+    };
+    socket.send(JSON.stringify(msg));
+}

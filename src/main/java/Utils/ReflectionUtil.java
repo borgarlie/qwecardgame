@@ -1,6 +1,8 @@
 package Utils;
 
 
+import Pojos.SpellEffect;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -29,6 +31,20 @@ public class ReflectionUtil {
             HandleWebSocketType handler = method.getAnnotation(HandleWebSocketType.class);
             String type = handler.value();
             map.put(type, method);
+        });
+        return map;
+    }
+
+    // Could probably make a template for these?
+    public static Map<SpellEffect, Method> findSpellEffectMethods(
+            Class<?> clazz,
+            Class<? extends Annotation> annotationClass) {
+        List<Method> methods = findAnnotatedMethods(clazz, annotationClass);
+        Map<SpellEffect, Method> map = new ConcurrentHashMap<>();
+        methods.forEach(method -> {
+            HandleSpellEffect handler = method.getAnnotation(HandleSpellEffect.class);
+            SpellEffect effect = handler.value();
+            map.put(effect, method);
         });
         return map;
     }

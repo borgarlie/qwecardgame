@@ -44,6 +44,7 @@ public class MenuCommunicationWrapper {
 
     private static void handleError(Exception e, JSONObject jsonObject, Session session) throws IOException {
         System.out.println("Error occurred when handling menu choice. Exception: " + e);
+        e.printStackTrace();
         String json = new JSONObject()
                 .put(TYPE, ERROR)
                 .put(ECHO, jsonObject)
