@@ -7,7 +7,9 @@ public enum SummonCreatureEffect {
     RETURN_TWO_OPPONENT_CARDS_TO_HAND ("When you put this creature into the battle zone, " +
             "choose up to 2 creatures in the battle zone and return them to their owners’ hands."),
     DESTROY_ALL_BLOCKERS ("When you put this creature into the battle zone, " +
-            "destroy all creatures that have “blocker”");
+            "destroy all creatures that have “blocker”"),
+    TAP_ONE_CREATURE ("When you put this creature into the battle zone, " +
+            "you may choose 1 of your opponent’s creatures in the battle zone and tap it.");
 
     private final String description;
 

@@ -130,10 +130,104 @@ INSERT INTO cards
     0, 0, 0, 0,
     'NONE', 'NONE', 'NONE', 'PLUS_POWER_ANGEL_COMMAND');
 
+-- 9 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('La Ura Giga', "LIGHT", "Guardian", 0,
+    1, 2000, 0, 1,
+    0, 0, 0, 0,
+    1, 0, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
 
--- Immoral baron, Vorg
+-- 10 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Lah, Purification Enforcer', "LIGHT", "Berserker", 0,
+    5, 5500, 0, 0,
+    0, 0, 0, 1,
+    1, 1, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
+
+-- 11 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Laser Wing', "LIGHT", "NONE", 1,
+    5, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0,
+    0, 0, 0, 0,
+    'TEMP_CANT_BLOCK_X2', 'NONE', 'NONE', 'NONE');
+
+-- 12 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Lok, Vizier of Hunting', "LIGHT", "Initiate", 0,
+    4, 4000, 0, 0,
+    0, 0, 0, 1,
+    1, 1, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
+
+-- 13 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Miele, Vizier of Lightning', "LIGHT", "Initiate", 0,
+    3, 1000, 0, 0,
+    0, 0, 0, 0,
+    1, 0, 0,
+    0, 0, 0, 0,
+    'NONE', 'TAP_ONE_CREATURE', 'NONE', 'NONE');
+
+-- 14 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Moonlight Flash', "LIGHT", "NONE", 1,
+    4, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0,
+    0, 0, 0, 0,
+    'TAP_TWO_OPPONENT_CREATURES', 'NONE', 'NONE', 'NONE');
+
+-- Immortal baron, Vorg
 -- Brawler zyler
--- La ura giga
 -- stonesaur
 -- phantom fish
 
@@ -165,21 +259,6 @@ INSERT INTO cards
     2, 1000, 2000, 0,
     0, 0, 0, 1,
     1, 1, 0,
-    0, 0, 0, 0,
-    'NONE', 'NONE', 'NONE', 'NONE');
-
-INSERT INTO cards
-    (name, type, race, is_spell_card,
-    mana_cost, power, power_attacker, blocker,
-    speed_attacker, slayer, shield_trigger, can_attack_player,
-    can_attack_creature, break_shields, must_attack,
-    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
-    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
-    VALUES
-    ('La Ura Giga', "LIGHT", "Guardian", 0,
-    1, 2000, 0, 1,
-    0, 0, 0, 0,
-    1, 0, 0,
     0, 0, 0, 0,
     'NONE', 'NONE', 'NONE', 'NONE');
 
