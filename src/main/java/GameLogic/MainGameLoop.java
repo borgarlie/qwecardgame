@@ -2,6 +2,7 @@ package GameLogic;
 
 
 import Pojos.Card;
+import Pojos.DestroyCreatureEffect;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
@@ -32,12 +33,16 @@ public class MainGameLoop {
     private static final String BLOCKER_INTERACTION = "blocker_interaction";
     private static final String SHIELD_TRIGGER = "shield_trigger";
     private static final String USE_BLOCKER = "USE_BLOCKER";
-    private static final String CARD_DIES = "card_dies";
     private static final String ATTACKING_WITH_POSITION = "attacking_with_position";
+    private static final String BLOCKING_WITH_POSITION = "blocking_with_position";
     private static final String ATTACKING_POSITION = "attacking_position";
+    private static final String ATTACKER_POSITION = "attacker_position";
     private static final String ATTACK_CREATURE = "attack_creature";
     private static final String USE_ON_OWN_CARDS = "use_on_own_cards"; // list
     private static final String USE_ON_OPPONENT_CARDS = "use_on_opponent_cards"; // list
+    private static final String ATTACKER_DIES = "attacker_dies";
+    private static final String BLOCKER_DIES = "blocker_dies";
+    private static final String ATTACKED_CREATURE_DIES = "attacked_creature_dies";
 
     public enum Player {
         PLAYER1, PLAYER2
@@ -280,35 +285,31 @@ public class MainGameLoop {
         Card attackedCreatureCard = otherPlayerState.getCardInBattleZonePosition(attackCreatureInPosition);
         Card attackingCard = currentPlayerState.getCardInBattleZonePosition(battleZonePosition);
         int outcome = attackingCard.fight(attackedCreatureCard);
-        String cardLivesJson = new JSONObject()
-                .put(TYPE, ATTACK_CREATURE)
-                .put(CARD_DIES, false)
-                .toString();
-        String cardDiesJson = new JSONObject()
-                .put(TYPE, ATTACK_CREATURE)
-                .put(CARD_DIES, true)
-                .toString();
         switch (outcome) {
-            case 1:
-                // Attacker wins
-                otherPlayerState.killCardInBattlezone(attackCreatureInPosition);
-                currentPlayerState.session.getRemote().sendString(cardLivesJson);
-                otherPlayerState.session.getRemote().sendString(cardDiesJson);
+            case 1: // Attacker wins
+                DestroyCreatureEffectHandler.handleEffect(otherPlayerState, attackCreatureInPosition);
                 break;
-            case -1:
-                // Attacked Creature wins
-                currentPlayerState.killCardInBattlezone(battleZonePosition);
-                currentPlayerState.session.getRemote().sendString(cardDiesJson);
-                otherPlayerState.session.getRemote().sendString(cardLivesJson);
+            case -1: // Attacked Creature wins
+                DestroyCreatureEffectHandler.handleEffect(currentPlayerState, battleZonePosition);
                 break;
-            default:
-                // Draw - both dies
-                currentPlayerState.killCardInBattlezone(battleZonePosition);
-                otherPlayerState.killCardInBattlezone(attackCreatureInPosition);
-                currentPlayerState.session.getRemote().sendString(cardDiesJson);
-                otherPlayerState.session.getRemote().sendString(cardDiesJson);
+            default: // Draw - both dies
+                DestroyCreatureEffectHandler.handleEffect(otherPlayerState, attackCreatureInPosition);
+                DestroyCreatureEffectHandler.handleEffect(currentPlayerState, battleZonePosition);
                 break;
         }
+        // The attacked person still do not know any details about the fight (unless there was a blocker interaction).
+        // Sending the information about attacker position and attacked position as well as the outcome
+        boolean attacker_dies = (outcome == -1 || outcome == 0);
+        boolean attacked_creature_dies = (outcome == 1 || outcome == 0);
+        String fightOutcomeJson = new JSONObject()
+                .put(TYPE, ATTACK_CREATURE)
+                .put(ATTACKING_WITH_POSITION, battleZonePosition)
+                .put(ATTACKING_POSITION, attackCreatureInPosition)
+                .put(ATTACKER_DIES, attacker_dies)
+                .put(ATTACKED_CREATURE_DIES, attacked_creature_dies)
+                .toString();
+        currentPlayerState.session.getRemote().sendString(fightOutcomeJson);
+        otherPlayerState.session.getRemote().sendString(fightOutcomeJson);
     }
 
     private void continueAttackingPlayer(Player player) throws IOException, GameError {
@@ -349,7 +350,7 @@ public class MainGameLoop {
             // Not using a blocker
             // We do not need to send information that the player is not blocking
             // Because when "check for shield trigger" is sent, we know it has not been blocked
-            //
+
             // Continue with breaking shield
             // Need to switch the player, as it is not the blocking player,
             // but the other player that initiated the attack
@@ -377,37 +378,31 @@ public class MainGameLoop {
         Card attackingCard = otherPlayerState.getCardInBattleZonePosition(attackingCreatureBattleZonePosition);
         int outcome = blockingCard.fight(attackingCard, true);
         currentPlayerState.tapCreature(battleZonePosition); // tap blocker
-
-        String cardLivesJson = new JSONObject()
-                .put(TYPE, USE_BLOCKER)
-                .put(CARD_DIES, false)
-                .toString();
-        String cardDiesJson = new JSONObject()
-                .put(TYPE, USE_BLOCKER)
-                .put(CARD_DIES, true)
-                .toString();
         switch (outcome) {
-            case 1:
-                // Blocker wins
-                otherPlayerState.killCardInBattlezone(attackingCreatureBattleZonePosition);
-                currentPlayerState.session.getRemote().sendString(cardLivesJson);
-                otherPlayerState.session.getRemote().sendString(cardDiesJson);
+            case 1: // Blocker wins
+                DestroyCreatureEffectHandler.handleEffect(otherPlayerState, attackingCreatureBattleZonePosition);
                 break;
-            case -1:
-                // Attacker wins
-                currentPlayerState.killCardInBattlezone(battleZonePosition);
-                currentPlayerState.session.getRemote().sendString(cardDiesJson);
-                otherPlayerState.session.getRemote().sendString(cardLivesJson);
+            case -1: // Attacker wins (destroys blocker)
+                DestroyCreatureEffectHandler.handleEffect(currentPlayerState, battleZonePosition);
                 break;
-            default:
-                // Draw - both dies
-                currentPlayerState.killCardInBattlezone(battleZonePosition);
-                otherPlayerState.killCardInBattlezone(attackingCreatureBattleZonePosition);
-                currentPlayerState.session.getRemote().sendString(cardDiesJson);
-                otherPlayerState.session.getRemote().sendString(cardDiesJson);
+            default: // Draw - both dies
+                DestroyCreatureEffectHandler.handleEffect(otherPlayerState, attackingCreatureBattleZonePosition);
+                DestroyCreatureEffectHandler.handleEffect(currentPlayerState, battleZonePosition);
                 break;
         }
-        // TODO: What to do about effects on blocker cards and attacking cards?
+        // Sending the information about blocker position and attacker position (blocked card) as well as the outcome
+        boolean blocker_dies = (outcome == -1 || outcome == 0);
+        boolean attacker_dies = (outcome == 1 || outcome == 0);
+        String fightOutcomeJson = new JSONObject()
+                .put(TYPE, USE_BLOCKER)
+                .put(BLOCKING_WITH_POSITION, battleZonePosition)
+                .put(ATTACKER_POSITION, attackingCreatureBattleZonePosition)
+                .put(BLOCKER_DIES, blocker_dies)
+                .put(ATTACKER_DIES, attacker_dies)
+                .toString();
+        currentPlayerState.session.getRemote().sendString(fightOutcomeJson);
+        otherPlayerState.session.getRemote().sendString(fightOutcomeJson);
+        // reset global values
         attackingCreatureBattleZonePosition = -1; // reset global value
         attackedCreatureBattleZonePosition = -1; // reset global value
         blockerInteractionActive = false; // reset global value

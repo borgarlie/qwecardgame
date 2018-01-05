@@ -1,6 +1,7 @@
 package Utils;
 
 
+import Pojos.DestroyCreatureEffect;
 import Pojos.SpellEffect;
 import Pojos.SummonCreatureEffect;
 
@@ -57,6 +58,19 @@ public class ReflectionUtil {
         methods.forEach(method -> {
             HandleSummonCreatureEffect handler = method.getAnnotation(HandleSummonCreatureEffect.class);
             SummonCreatureEffect effect = handler.value();
+            map.put(effect, method);
+        });
+        return map;
+    }
+
+    public static Map<DestroyCreatureEffect, Method> findDestroyCreatureEffectMethods(
+            Class<?> clazz,
+            Class<? extends Annotation> annotationClass) {
+        List<Method> methods = findAnnotatedMethods(clazz, annotationClass);
+        Map<DestroyCreatureEffect, Method> map = new ConcurrentHashMap<>();
+        methods.forEach(method -> {
+            HandleDestroyCreatureEffect handler = method.getAnnotation(HandleDestroyCreatureEffect.class);
+            DestroyCreatureEffect effect = handler.value();
             map.put(effect, method);
         });
         return map;
