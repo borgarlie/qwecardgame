@@ -265,6 +265,13 @@ public class PlayerState {
                 .findFirst();
     }
 
+    public void returnCardFromBattlezoneToHand(int battleZonePosition) throws GameError {
+        Card card = getCardInBattleZonePosition(battleZonePosition);
+        card.setTapped(false); // Card should be untapped when added to hand
+        this.battlezone.remove(battleZonePosition);
+        this.hand.add(card);
+    }
+
     public Card canAttackCreature(int battleZonePosition, Card attackedCreature) throws GameError {
         // Can only attack tapped creatures unless the attacking creature
         // has the spell effect "can attack untapped creatures"

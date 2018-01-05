@@ -95,7 +95,11 @@ public class GameCommunicationWrapper {
             throws IOException, GameError {
         System.out.println("Add to battle zone");
         int handPosition = jsonObject.getInt(HAND_POSITION);
-        gameLoop.addToBattleZone(player, handPosition);
+        ArrayList<Integer> useOnOpponentCards = new ArrayList<>();
+        jsonObject.getJSONArray(USE_ON_OPPONENT_CARDS).forEach(position -> useOnOpponentCards.add((int)position));
+        ArrayList<Integer> useOnOwnCards = new ArrayList<>();
+        jsonObject.getJSONArray(USE_ON_OWN_CARDS).forEach(position -> useOnOwnCards.add((int)position));
+        gameLoop.addToBattleZone(player, handPosition, useOnOpponentCards, useOnOwnCards);
     }
 
     @HandleWebSocketType(ATTACK_PLAYER)

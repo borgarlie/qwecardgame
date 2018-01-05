@@ -36,6 +36,8 @@ public class MainGameLoop {
     private static final String ATTACKING_WITH_POSITION = "attacking_with_position";
     private static final String ATTACKING_POSITION = "attacking_position";
     private static final String ATTACK_CREATURE = "attack_creature";
+    private static final String USE_ON_OWN_CARDS = "use_on_own_cards"; // list
+    private static final String USE_ON_OPPONENT_CARDS = "use_on_opponent_cards"; // list
 
     public enum Player {
         PLAYER1, PLAYER2
@@ -182,24 +184,35 @@ public class MainGameLoop {
         otherPlayerState.session.getRemote().sendString(json);
     }
 
-    public void addToBattleZone(Player player, int handPosition) throws GameError, IOException {
+    public void addToBattleZone(
+            Player player,
+            int handPosition,
+            List<Integer> useOnOpponentCards,
+            List<Integer> useOnOwnCards) throws GameError, IOException {
         if (!isAllowedToMakeAMove(player)) {
             throw new GameError(NOT_ALLOWED, "Not allowed to summon creature when it is not your turn");
         }
+        // Check if chosen cards exists (in case of effects used)
         PlayerState currentPlayerState = getCurrentPlayerState(player);
+        PlayerState otherPlayerState = getOtherPlayerState(player);
+        for (int battleZonePosition : useOnOpponentCards) {
+            otherPlayerState.getCardInBattleZonePosition(battleZonePosition);
+        }
+        for (int battleZonePosition : useOnOwnCards) {
+            currentPlayerState.getCardInBattleZonePosition(battleZonePosition);
+        }
+        // Add card to battle zone if allowed
         Card summonedCreatureCard = currentPlayerState.addToBattleZone(handPosition);
+        // Send message to other player
         String json = new JSONObject()
                 .put(TYPE, ADD_TO_BATTLEZONE)
                 .put(ADD_TO_BATTLEZONE, summonedCreatureCard.toJson())
+                .put(USE_ON_OPPONENT_CARDS, useOnOpponentCards)
+                .put(USE_ON_OWN_CARDS, useOnOwnCards)
                 .toString();
-        PlayerState otherPlayerState = getOtherPlayerState(player);
         otherPlayerState.session.getRemote().sendString(json);
         // Handle "When you put this creature into the battle zone" effects
-        handleSummonCreatureEffects(player, summonedCreatureCard);
-    }
-
-    private void handleSummonCreatureEffects(Player player, Card summonedCreatureCard) {
-        // TODO: Implement this
+        SummonCreatureEffectHandler.handleEffect(player, this, summonedCreatureCard, useOnOpponentCards, useOnOwnCards);
     }
 
     /*

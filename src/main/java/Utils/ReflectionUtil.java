@@ -2,6 +2,7 @@ package Utils;
 
 
 import Pojos.SpellEffect;
+import Pojos.SummonCreatureEffect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -35,7 +36,6 @@ public class ReflectionUtil {
         return map;
     }
 
-    // Could probably make a template for these?
     public static Map<SpellEffect, Method> findSpellEffectMethods(
             Class<?> clazz,
             Class<? extends Annotation> annotationClass) {
@@ -44,6 +44,19 @@ public class ReflectionUtil {
         methods.forEach(method -> {
             HandleSpellEffect handler = method.getAnnotation(HandleSpellEffect.class);
             SpellEffect effect = handler.value();
+            map.put(effect, method);
+        });
+        return map;
+    }
+
+    public static Map<SummonCreatureEffect, Method> findSummonCreatureEffectMethods(
+            Class<?> clazz,
+            Class<? extends Annotation> annotationClass) {
+        List<Method> methods = findAnnotatedMethods(clazz, annotationClass);
+        Map<SummonCreatureEffect, Method> map = new ConcurrentHashMap<>();
+        methods.forEach(method -> {
+            HandleSummonCreatureEffect handler = method.getAnnotation(HandleSummonCreatureEffect.class);
+            SummonCreatureEffect effect = handler.value();
             map.put(effect, method);
         });
         return map;

@@ -34,8 +34,6 @@ public class SpellHandler {
             List<Integer> useOnOpponentCards,
             List<Integer> useOnOwnCards) throws GameError, IOException {
         SpellEffect spellEffect = spellCard.getSpellEffect();
-        System.out.println(spellEffect);
-        System.out.println(spellHandlers);
         try {
             spellHandlers.get(spellEffect)
                     .invoke(null, currentPlayer, mainGameLoop, spellCard, useOnOpponentCards, useOnOwnCards);
@@ -123,7 +121,7 @@ public class SpellHandler {
             List<Integer> useOnOwnCards) throws IOException {
         String json = new JSONObject()
                 .put(TYPE, USE_SPELL)
-                .put(CARD, spellCard)
+                .put(CARD, spellCard.toJson())
                 .put(USE_ON_OPPONENT_CARDS, useOnOpponentCards)
                 .put(USE_ON_OWN_CARDS, useOnOwnCards)
                 .toString();
