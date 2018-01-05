@@ -114,10 +114,10 @@ public class MainGameLoop {
         return player == turn;
     }
 
-    // TODO: some effects on cards are triggered when turn ends, e.g. "untap creature at end of turn"
-    // ^ These effects do probably not need to be sent to the players..
+    // Some effects on cards are triggered when turn ends, e.g. "untap creature at end of turn"
+    // ^ These effects do probably not need to be sent to the players.
     // they require no interaction and can be handled automatically here and on client side separetely for both players.
-    // Temporal effects needs to be removed at this point.
+    // Temporal effects are removed at this point.
     public void endTurn(Player player) throws GameError, IOException {
         if (!isAllowedToMakeAMove(player)) {
             throw new GameError(NOT_ALLOWED, "Not allowed to end turn when it is not your turn");
@@ -264,8 +264,11 @@ public class MainGameLoop {
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         Card attackCard = currentPlayerState.canAttackCreature(battleZonePosition, attackedCreatureCard);
         currentPlayerState.tapCreature(battleZonePosition); // tap attacking creature
-        // trigger temp on attack effects
+        // trigger temp on attack effects for attacker
         TempOnAttackEffectHandler.handleEffect(player, this, battleZonePosition, attackCreatureInPosition);
+        // trigger temp on attack effects for attacked creature
+        Player otherPlayer = getOtherPlayer(player);
+        TempOnAttackEffectHandler.handleEffect(otherPlayer, this, attackCreatureInPosition, battleZonePosition);
         // check for possible blocking
         if (attackCard.canBeBlocked() && otherPlayerState.has_blocker()) {
             attackingCreatureBattleZonePosition = battleZonePosition;
