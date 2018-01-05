@@ -24,10 +24,6 @@ public class Card {
     String race;
     boolean is_spell;
 
-    // TODO: How to implement effects? Save a list of effects and register them on cards?
-    // If we do this, we can check for effect ENUM and manually handle each effect
-    // This also applies for spells, as all spells are compositions of 1 or more effects
-
     // Using NONE enums instead of actual "null" to remove the need for null checks.
     SpellEffect spellEffect;
     SummonCreatureEffect summonCreatureEffect;
@@ -58,11 +54,11 @@ public class Card {
     boolean summoningSickness = false;
 
     // Temporal effects
-    private int temp_power;
-    private boolean temp_double_breaker; // TODO Use
-    private boolean temp_can_attack_untapped_creatures;
-    private boolean temp_can_not_be_blocked;
-    private boolean temp_slayer_when_blocked;
+    private int temp_power = 0;
+    private boolean temp_double_breaker = false; // TODO Use
+    private boolean temp_can_attack_untapped_creatures = false;
+    private boolean temp_can_not_be_blocked = false;
+    private boolean temp_slayer_when_blocked = false;
 
     public void removeTemporalEffects() {
         this.temp_power = 0;
@@ -71,15 +67,23 @@ public class Card {
         this.temp_can_attack_untapped_creatures = false;
         this.temp_slayer_when_blocked = false;
     }
-    // TODO: How to activate temp power and temp double breaker, etc?
 
-    public int getTotalAttackingPower() {
-        if (this.isTapped()) {
-            // Tapped creatures do not "power attacker"
-            // Could also implement this as only getting total on attacking creature and not the one getting attacked
-            return this.power + this.temp_power;
+    private int temp_on_attack_power = 0;
+    private int temp_on_attack_power_attacker = 0;
+    private boolean temp_on_attack_can_not_be_blocked = false; // TODO: How to use this?
+
+    public void removeTempOnAttackEffects() {
+        this.temp_on_attack_power = 0;
+        this.temp_on_attack_power_attacker = 0;
+        this.temp_on_attack_can_not_be_blocked = false;
+    }
+
+    public int getTotalAttackingPower(boolean isAttacking) {
+        int power = this.power + this.temp_power + this.temp_on_attack_power;
+        if (isAttacking) {
+            return power + this.power_attacker + this.temp_on_attack_power_attacker;
         }
-        return this.power + this.power_attacker + this.temp_power;
+        return power;
     }
 
     public boolean canBeBlocked() {
@@ -95,7 +99,15 @@ public class Card {
         if either card is a slayer and it looses, the other card will also die and return is 0.
      */
     public int fight(Card otherPlayersCard, boolean isBlocking) {
-        if (this.getTotalAttackingPower() > otherPlayersCard.getTotalAttackingPower()) {
+        // The attacker always get power attacker. Blockers do not get it
+        int thisCardTotalPower = this.getTotalAttackingPower(true);
+        int otherCardTotalPower = otherPlayersCard.getTotalAttackingPower(false);
+        if (isBlocking) {
+            thisCardTotalPower = this.getTotalAttackingPower(false);
+            // The other card only gets power attacker if this card is blocking, which means the other card is attacking
+            otherCardTotalPower = otherPlayersCard.getTotalAttackingPower(true);
+        }
+        if (thisCardTotalPower > otherCardTotalPower) {
             if (otherPlayersCard.isSlayer() || (otherPlayersCard.isTemp_slayer_when_blocked() && isBlocking)) {
                 return 0;
             }
@@ -104,7 +116,7 @@ public class Card {
             }
             return 1;
         }
-        else if (this.getTotalAttackingPower() < otherPlayersCard.getTotalAttackingPower()) {
+        else if (thisCardTotalPower < otherCardTotalPower) {
             if (this.isSlayer()) {
                 return 0;
             }

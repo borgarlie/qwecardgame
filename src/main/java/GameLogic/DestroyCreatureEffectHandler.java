@@ -15,7 +15,7 @@ import static Pojos.DestroyCreatureEffect.RETURN_TO_HAND;
 
 public class DestroyCreatureEffectHandler {
 
-    // map of all summon creature effect handlers
+    // map of all destroy creature effect handlers
     private static Map<DestroyCreatureEffect, Method> destroyCreatureEffectHandlers
             = ReflectionUtil.findDestroyCreatureEffectMethods(
                     DestroyCreatureEffectHandler.class, HandleDestroyCreatureEffect.class);

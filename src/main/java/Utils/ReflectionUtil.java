@@ -4,6 +4,7 @@ package Utils;
 import Pojos.DestroyCreatureEffect;
 import Pojos.SpellEffect;
 import Pojos.SummonCreatureEffect;
+import Pojos.TempOnAttackEffect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -71,6 +72,19 @@ public class ReflectionUtil {
         methods.forEach(method -> {
             HandleDestroyCreatureEffect handler = method.getAnnotation(HandleDestroyCreatureEffect.class);
             DestroyCreatureEffect effect = handler.value();
+            map.put(effect, method);
+        });
+        return map;
+    }
+
+    public static Map<TempOnAttackEffect, Method> findTempOnAttackEffectMethods(
+            Class<?> clazz,
+            Class<? extends Annotation> annotationClass) {
+        List<Method> methods = findAnnotatedMethods(clazz, annotationClass);
+        Map<TempOnAttackEffect, Method> map = new ConcurrentHashMap<>();
+        methods.forEach(method -> {
+            HandleTempOnAttackEffect handler = method.getAnnotation(HandleTempOnAttackEffect.class);
+            TempOnAttackEffect effect = handler.value();
             map.put(effect, method);
         });
         return map;

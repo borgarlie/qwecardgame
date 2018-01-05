@@ -235,6 +235,9 @@ public class MainGameLoop {
         Card attackCard = currentPlayerState.canAttackPlayer(battleZonePosition);
         currentPlayerState.tapCreature(battleZonePosition); // tap attacking creature
         attackingCreatureBattleZonePosition = battleZonePosition;
+        // trigger temp on attack effects
+        TempOnAttackEffectHandler.handleEffect(player, this, battleZonePosition, -1);
+        // check for possible blocking
         PlayerState otherPlayerState = getOtherPlayerState(player);
         if (attackCard.canBeBlocked() && otherPlayerState.has_blocker()) {
             // Requires additional interaction before moving on
@@ -261,6 +264,9 @@ public class MainGameLoop {
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         Card attackCard = currentPlayerState.canAttackCreature(battleZonePosition, attackedCreatureCard);
         currentPlayerState.tapCreature(battleZonePosition); // tap attacking creature
+        // trigger temp on attack effects
+        TempOnAttackEffectHandler.handleEffect(player, this, battleZonePosition, attackCreatureInPosition);
+        // check for possible blocking
         if (attackCard.canBeBlocked() && otherPlayerState.has_blocker()) {
             attackingCreatureBattleZonePosition = battleZonePosition;
             attackedCreatureBattleZonePosition = attackCreatureInPosition;
@@ -284,6 +290,7 @@ public class MainGameLoop {
         PlayerState otherPlayerState = getOtherPlayerState(player);
         Card attackedCreatureCard = otherPlayerState.getCardInBattleZonePosition(attackCreatureInPosition);
         Card attackingCard = currentPlayerState.getCardInBattleZonePosition(battleZonePosition);
+        // initiate fight
         int outcome = attackingCard.fight(attackedCreatureCard);
         switch (outcome) {
             case 1: // Attacker wins
@@ -310,6 +317,9 @@ public class MainGameLoop {
                 .toString();
         currentPlayerState.session.getRemote().sendString(fightOutcomeJson);
         otherPlayerState.session.getRemote().sendString(fightOutcomeJson);
+        // remove temp on attack effects
+        currentPlayerState.removeAllTempOnAttackEffects();
+        otherPlayerState.removeAllTempOnAttackEffects();
     }
 
     private void continueAttackingPlayer(Player player) throws IOException, GameError {
@@ -339,6 +349,10 @@ public class MainGameLoop {
         // Maybe we should FORCE interaction ? E.g. force the other player to press OK or something after getting a
         // card in his hand
         // and if it is a shield trigger, choose between "use" and "not use"
+
+        // remove temp on attack effects
+        currentPlayerState.removeAllTempOnAttackEffects();
+        otherPlayerState.removeAllTempOnAttackEffects();
     }
 
     public void blockerInteraction(Player player, int battleZonePosition) throws GameError, IOException {
@@ -375,6 +389,9 @@ public class MainGameLoop {
         if (!blockingCard.isBlocker()) {
             throw new GameError(NOT_ALLOWED, "This card is not a blocker");
         }
+        // trigger temp on attack effects for blocker
+        TempOnAttackEffectHandler.handleEffect(player, this, battleZonePosition, attackingCreatureBattleZonePosition);
+        // initiate fight
         Card attackingCard = otherPlayerState.getCardInBattleZonePosition(attackingCreatureBattleZonePosition);
         int outcome = blockingCard.fight(attackingCard, true);
         currentPlayerState.tapCreature(battleZonePosition); // tap blocker
@@ -406,6 +423,9 @@ public class MainGameLoop {
         attackingCreatureBattleZonePosition = -1; // reset global value
         attackedCreatureBattleZonePosition = -1; // reset global value
         blockerInteractionActive = false; // reset global value
+        // remove temp on attack effects
+        currentPlayerState.removeAllTempOnAttackEffects();
+        otherPlayerState.removeAllTempOnAttackEffects();
     }
 
     // TODO: Should be possible to call this twice. e.g use "num_shield_triggers"

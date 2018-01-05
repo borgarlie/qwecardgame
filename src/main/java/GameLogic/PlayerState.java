@@ -311,6 +311,20 @@ public class PlayerState {
         return card;
     }
 
+    public boolean hasCreatureRaceInBattlezone(String race) {
+        String lowerCaseRace = race.toLowerCase().trim();
+        for (Card card : this.battlezone) {
+            if (card.getRace().equals(lowerCaseRace)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void removeAllTempOnAttackEffects() {
+        this.battlezone.forEach(Card::removeTempOnAttackEffects);
+    }
+
     public static void main(String[] args) throws GameError {
         PlayerState newPlayer = new PlayerState(MainGameLoop.Player.PLAYER1, null, "TestPlayer1", 12);
         System.out.println("Deck size: " + newPlayer.deck.size());
