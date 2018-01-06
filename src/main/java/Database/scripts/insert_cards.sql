@@ -356,7 +356,7 @@ INSERT INTO cards
     0, 0, 0, 1,
     1, 1, 0,
     0, 0, 0, 0,
-    'NONE', 'RETURN_TWO_OPPONENT_CARDS_TO_HAND', 'NONE', 'NONE');
+    'NONE', 'RETURN_TWO_CARDS_TO_HAND', 'NONE', 'NONE');
 
 -- S4 / S10
 INSERT INTO cards

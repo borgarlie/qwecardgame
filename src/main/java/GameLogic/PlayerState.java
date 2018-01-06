@@ -202,9 +202,24 @@ public class PlayerState {
         return card;
     }
 
-    // Removes a shield from this player and places the shield in their hand
-    public Card attackThisPlayer() {
-        // TODO: Implement: if 0 shields -> attack player and win
+    // Removes shield(s) from this player and places the shield(s) in their hand
+    // If the player has 0 shields, then the attacking player wins and this function returns empty list.
+    // Otherwise the function returns the shields placed in the hand
+    // It will destroy as many shields as possible up to numBreakShields.
+    // If a double breaker attacks and there is only 1 shield left, then only this shield is destroyed.
+    public ArrayList<Card> attackThisPlayer(Card attackingCreature) {
+        ArrayList<Card> shields = new ArrayList<>();
+        int numBreakShields = attackingCreature.getBreak_shields();
+        for (int i=0; i < numBreakShields; i++) {
+            if (this.shields.size() == 0) {
+                break;
+            }
+            shields.add(removeOneShield());
+        }
+        return shields;
+    }
+
+    private Card removeOneShield() {
         int lastShield = this.shields.size() - 1;
         Card shield = this.shields.get(lastShield).toBuilder().build();
         this.shields.remove(lastShield);
@@ -214,21 +229,6 @@ public class PlayerState {
 
     public boolean has_blocker() {
         return this.battlezone.stream().filter(Card::isBlocker).findFirst().isPresent();
-    }
-
-    public Card useShieldTrigger() {
-        // TODO: Make sure this works for all cards
-        Card shieldTrigger = getLastCardAddedToHand();
-        this.hand.remove(this.hand.size() - 1);
-        // TODO: Use shield trigger effect
-        // E.g. if creature -> summon to battlezone and possibly use effects (Not included in DM-01)
-        // if spell -> use spell.. possibly with interaction (11 possible in DM-01)
-        return shieldTrigger;
-    }
-
-    public Card getLastCardAddedToHand() {
-        int lastHand = this.hand.size() - 1;
-        return this.hand.get(lastHand).toBuilder().build();
     }
 
     public Card getCardInHandPosition(int handPosition) {

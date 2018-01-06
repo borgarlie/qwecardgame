@@ -7,10 +7,12 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import static GameLogic.GameError.ErrorCode.NOT_ALLOWED;
 
@@ -28,7 +30,9 @@ public class MainGameLoop {
     private static final String PLACED_MANA = "placed_mana";
     private static final String ADD_TO_BATTLEZONE = "add_to_battlezone";
     private static final String CHECK_FOR_SHIELD_TRIGGER = "check_for_shield_trigger";
+    private static final String NUM_SHIELD_TRIGGERS = "num_shield_triggers";
     private static final String CARD = "card";
+    private static final String CARDS = "cards";
     private static final String ATTACK_WITH_POSITION = "attack_with_position";
     private static final String BLOCKER_INTERACTION = "blocker_interaction";
     private static final String SHIELD_TRIGGER = "shield_trigger";
@@ -58,6 +62,7 @@ public class MainGameLoop {
     private boolean blockerInteractionActive = false;
     private int attackingCreatureBattleZonePosition = -1;
     private int attackedCreatureBattleZonePosition = -1;
+    private int shield_triggers = 0;
 
     public MainGameLoop(Session player1sessision, String player1Username, int player1DeckId,
                         Session player2session, String player2Username, int player2DeckId)
@@ -110,8 +115,10 @@ public class MainGameLoop {
         return Player.PLAYER1;
     }
 
+    // A player is only allowed to make a move when it is that players turn,
+    // and there is no shield trigger or blocker interaction active
     public boolean isAllowedToMakeAMove(Player player) {
-        return player == turn;
+        return player == turn && !shieldTriggerInteractionActive && !blockerInteractionActive;
     }
 
     // Some effects on cards are triggered when turn ends, e.g. "untap creature at end of turn"
@@ -329,16 +336,20 @@ public class MainGameLoop {
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         PlayerState otherPlayerState = getOtherPlayerState(player);
         Card attackingCard = currentPlayerState.getCardInBattleZonePosition(attackingCreatureBattleZonePosition);
-        Card shield = otherPlayerState.attackThisPlayer();
-        // TODO: if attackingCard destroys more than 1 shield, then we need to loop this and return multiple shields..
-        // TODO: What if there are multiple shield triggers?
-        int battleZonePosition = this.attackingCreatureBattleZonePosition;
+        ArrayList<Card> shields = otherPlayerState.attackThisPlayer(attackingCard);
+        if (shields.isEmpty()) {
+            initiateWinGame(player); // attacking player has won
+            return;
+        }
+        int numShieldTriggers = (int) shields.stream().filter(Card::isShield_trigger).count();
+        ArrayList<JSONObject> shieldsAsJson
+                = shields.stream().map(Card::toJson).collect(Collectors.toCollection(ArrayList::new));
         // Requires interaction before moving on
         String json = new JSONObject()
                 .put(TYPE, CHECK_FOR_SHIELD_TRIGGER)
-                .put(CHECK_FOR_SHIELD_TRIGGER, shield.isShield_trigger())
-                .put(CARD, shield.toJson())
-                .put(ATTACK_WITH_POSITION, battleZonePosition)
+                .put(NUM_SHIELD_TRIGGERS, numShieldTriggers)
+                .put(CARDS, shieldsAsJson)
+                .put(ATTACK_WITH_POSITION, attackingCreatureBattleZonePosition)
                 // Need to send position to other player,
                 // since there can be multiple of the same card
                 .toString();
@@ -347,19 +358,22 @@ public class MainGameLoop {
                 .put(TYPE, CHECK_FOR_SHIELD_TRIGGER)
                 .toString();
         currentPlayerState.session.getRemote().sendString(json2);
+        // Have to force shield trigger interaction regardless of whether or not it is a shield trigger.
+        // Otherwise the other player would know that it was a shield trigger.
+        this.shield_triggers = shields.size();
         shieldTriggerInteractionActive = true;
-        // Problem if we do not force this is that the initiating player KNOW that there is a shield trigger present.
-        // Maybe we should FORCE interaction ? E.g. force the other player to press OK or something after getting a
-        // card in his hand
-        // and if it is a shield trigger, choose between "use" and "not use"
-
         // remove temp on attack effects
         currentPlayerState.removeAllTempOnAttackEffects();
         otherPlayerState.removeAllTempOnAttackEffects();
     }
 
+    private void initiateWinGame(Player player) {
+        // TODO: Implement this
+    }
+
     public void blockerInteraction(Player player, int battleZonePosition) throws GameError, IOException {
-        if (!blockerInteractionActive) {
+        // Only the attacked player can use blocker
+        if (player == turn || !blockerInteractionActive) {
             throw new GameError(NOT_ALLOWED, "No blocker interaction active");
         }
         PlayerState otherPlayerState = getOtherPlayerState(player);
@@ -431,35 +445,66 @@ public class MainGameLoop {
         otherPlayerState.removeAllTempOnAttackEffects();
     }
 
-    // TODO: Should be possible to call this twice. e.g use "num_shield_triggers"
-    // Also need to make it possible to choose which one to use first and last if there are multiple
-    // (could be 0, 1, 2 or 3)
-    public void shieldTriggerInteraction(Player player, boolean useShieldTrigger)
-            throws GameError, IOException {
-        if (!shieldTriggerInteractionActive) {
+    // This function needs to be called shield_triggers times.
+    // It does not matter which way the triggers are called.
+    // The attacking player will get noticed whether or not a shield trigger will be used
+    // the same number of times as this function needs to be called, and need to wait for these notices.
+    public void shieldTriggerInteraction(
+            Player player,
+            boolean useShieldTrigger,
+            int handPosition,
+            List<Integer> useOnOpponentCards,
+            List<Integer> useOnOwnCards) throws GameError, IOException {
+        // Only the attacked player can use shield triggers
+        if (player == turn || !shieldTriggerInteractionActive) {
             throw new GameError(NOT_ALLOWED, "No shield trigger interaction active");
         }
         PlayerState currentPlayerState = getCurrentPlayerState(player);
         PlayerState otherPlayerState = getOtherPlayerState(player);
-        Card card = currentPlayerState.getLastCardAddedToHand();
-        // Can not just send error if not shield trigger.
-        // Need to send reply to attacking player that no shield trigger will be used
-        if (!useShieldTrigger || !card.isShield_trigger()) {
+        if (handPosition < currentPlayerState.hand.size() - this.shield_triggers) {
+            throw new GameError(GameError.ErrorCode.NOT_ALLOWED,
+                    "Can only use shield triggers from shields that were just destroyed");
+        }
+        if (!useShieldTrigger) {
+            // Need to send reply to attacking player that no shield trigger will be used
             String json = new JSONObject()
                     .put(TYPE, SHIELD_TRIGGER)
                     .put(SHIELD_TRIGGER, false)
                     .toString();
             otherPlayerState.session.getRemote().sendString(json);
         }
-        currentPlayerState.useShieldTrigger();
-        shieldTriggerInteractionActive = false; // reset global value
-        String json = new JSONObject()
-                .put(TYPE, SHIELD_TRIGGER)
-                .put(SHIELD_TRIGGER, true)
-                .put(CARD, card.toJson())
-                .toString();
-        otherPlayerState.session.getRemote().sendString(json);
-        attackingCreatureBattleZonePosition = -1; // reset global value
+        Card card = currentPlayerState.getCardInHandPosition(handPosition);
+        if (!card.isShield_trigger()) {
+            // Need to send reply to attacking player that no shield trigger will be used
+            String json = new JSONObject()
+                    .put(TYPE, SHIELD_TRIGGER)
+                    .put(SHIELD_TRIGGER, false)
+                    .toString();
+            otherPlayerState.session.getRemote().sendString(json);
+        }
+        // Use shield trigger
+        if (useShieldTrigger && card.isShield_trigger()) {
+            String json = new JSONObject()
+                    .put(TYPE, SHIELD_TRIGGER)
+                    .put(SHIELD_TRIGGER, true)
+                    .put(CARD, card.toJson())
+                    .toString();
+            otherPlayerState.session.getRemote().sendString(json);
+            if (card.is_spell()) {
+                System.out.println("Spell shield trigger used.");
+                SpellHandler.handleSpell(player, this, card, useOnOpponentCards, useOnOwnCards);
+            }
+            else {
+                System.out.println("Creature shield trigger used");
+                // TODO: Implement creature shield trigger (Not present in DM-01)
+            }
+        }
+        // reduce number of shield triggers left to check
+        this.shield_triggers = this.shield_triggers - 1;
+        if (this.shield_triggers == 0) {
+            this.shieldTriggerInteractionActive = false;
+            this.attackingCreatureBattleZonePosition = -1; // reset global value
+        }
     }
 
     public void useSpellCard(

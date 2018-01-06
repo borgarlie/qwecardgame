@@ -124,7 +124,12 @@ public class GameCommunicationWrapper {
             throws IOException, GameError {
         System.out.println("Shield interaction");
         boolean useShieldTrigger = jsonObject.getBoolean(USE_SHIELD_TRIGGER);
-        gameLoop.shieldTriggerInteraction(player, useShieldTrigger);
+        int handPosition = jsonObject.getInt(HAND_POSITION);
+        ArrayList<Integer> useOnOpponentCards = new ArrayList<>();
+        jsonObject.getJSONArray(USE_ON_OPPONENT_CARDS).forEach(position -> useOnOpponentCards.add((int)position));
+        ArrayList<Integer> useOnOwnCards = new ArrayList<>();
+        jsonObject.getJSONArray(USE_ON_OWN_CARDS).forEach(position -> useOnOwnCards.add((int)position));
+        gameLoop.shieldTriggerInteraction(player, useShieldTrigger, handPosition, useOnOpponentCards, useOnOwnCards);
     }
 
     @HandleWebSocketType(USE_BLOCKER)
