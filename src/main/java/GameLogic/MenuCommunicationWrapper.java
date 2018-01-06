@@ -130,6 +130,22 @@ public class MenuCommunicationWrapper {
         requests.remove(acceptedRequestFromUser);
     }
 
+    public static void endGame(String gameId) throws GameError {
+        MainGameLoop game = WebSocketEndpoint.games.get(gameId);
+        if (game.getTurn() != MainGameLoop.Player.NONE) {
+            System.out.println("Bad state. Trying to end game while Player != NONE");
+            throw new GameError(GameError.ErrorCode.BAD_STATE,
+                    "Should not be possible to end game while a player has a turn");
+        }
+        // If we are going to save history of games, statistics, etc., we should do that here.
+        // deleting game
+        Session player1Session = game.getCurrentPlayerState(MainGameLoop.Player.PLAYER1).session;
+        Session player2Session = game.getCurrentPlayerState(MainGameLoop.Player.PLAYER2).session;
+        WebSocketEndpoint.sessions.remove(player1Session);
+        WebSocketEndpoint.sessions.remove(player2Session);
+        WebSocketEndpoint.games.remove(gameId);
+    }
+
     // TODO: Implement withdraw request
 
     // Used for testing purposes

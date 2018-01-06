@@ -231,13 +231,16 @@ public class PlayerState {
         return this.battlezone.stream().filter(Card::isBlocker).findFirst().isPresent();
     }
 
-    public Card getCardInHandPosition(int handPosition) {
+    public Card getCardInHandPosition(int handPosition) throws GameError {
+        if (this.hand.size() <= handPosition) {
+            throw new GameError(NOT_ENOUGH_CARDS, "There are not that many cards in your hand.");
+        }
         return this.hand.get(handPosition).toBuilder().build();
     }
 
     public Card getCardInBattleZonePosition(int battleZonePosition) throws GameError {
         if (this.battlezone.size() <= battleZonePosition) {
-            throw new GameError(NOT_ENOUGH_CARDS, "There are not that many cards in the battle zone");
+            throw new GameError(NOT_ENOUGH_CARDS, "There are not that many cards in the battle zone.");
         }
         return this.battlezone.get(battleZonePosition).toBuilder().build();
     }

@@ -47,9 +47,11 @@ public class MainGameLoop {
     private static final String ATTACKER_DIES = "attacker_dies";
     private static final String BLOCKER_DIES = "blocker_dies";
     private static final String ATTACKED_CREATURE_DIES = "attacked_creature_dies";
+    private static final String GAME_END = "game_end";
+    private static final String WINNER = "winner";
 
     public enum Player {
-        PLAYER1, PLAYER2
+        PLAYER1, PLAYER2, NONE
     }
 
     public String gameId;
@@ -94,6 +96,10 @@ public class MainGameLoop {
                 .toString();
         Session currentPlayerSession = getCurrentTurnPlayerSession();
         currentPlayerSession.getRemote().sendString(json);
+    }
+
+    public Player getTurn() {
+        return turn;
     }
 
     private Session getCurrentTurnPlayerSession() {
@@ -367,8 +373,23 @@ public class MainGameLoop {
         otherPlayerState.removeAllTempOnAttackEffects();
     }
 
-    private void initiateWinGame(Player player) {
-        // TODO: Implement this
+    private void initiateWinGame(Player player) throws IOException, GameError {
+        System.out.println(player + " wins.");
+        PlayerState winner = getCurrentPlayerState(player);
+        PlayerState looser = getOtherPlayerState(player);
+        String winnerMessage = new JSONObject()
+                .put(TYPE, GAME_END)
+                .put(WINNER, true)
+                .toString();
+        String looserMessage = new JSONObject()
+                .put(TYPE, GAME_END)
+                .put(WINNER, false)
+                .toString();
+        winner.session.getRemote().sendString(winnerMessage);
+        looser.session.getRemote().sendString(looserMessage);
+        // Set turn = NONE, so that we have a way to know that a game has ended
+        this.turn = Player.NONE;
+        MenuCommunicationWrapper.endGame(this.gameId);
     }
 
     public void blockerInteraction(Player player, int battleZonePosition) throws GameError, IOException {
