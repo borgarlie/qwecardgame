@@ -54,11 +54,17 @@ public class MainGameLoop {
         PLAYER1, PLAYER2, NONE
     }
 
+    public enum Step {
+        MANA, SUMMON, BATTLE
+    }
+
     public String gameId;
 
     private PlayerState player1state;
     private PlayerState player2state;
     private Player turn;
+
+    public Step currentStep = Step.MANA;
 
     private boolean shieldTriggerInteractionActive = false;
     private boolean blockerInteractionActive = false;

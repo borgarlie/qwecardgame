@@ -6,7 +6,7 @@ public class GameError extends Exception {
 
     public enum ErrorCode {
         BAD_STATE, INIT_ERROR, NOT_ENOUGH_MANA, WRONG_CARD_TYPE, NOT_ALLOWED,
-        NOT_ENOUGH_CARDS, SUMMONING_SICKNESS, ALREADY_TAPPED
+        NOT_ENOUGH_CARDS, SUMMONING_SICKNESS, ALREADY_TAPPED, WRONG_STEP
     }
 
     ErrorCode error;

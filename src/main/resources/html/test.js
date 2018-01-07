@@ -89,11 +89,13 @@ function sendPlaceMana(hand_position) {
     socket.send(JSON.stringify(msg));
 }
 
-function sendAddToBattleZone(hand_position) {
+function sendAddToBattleZone(hand_position, opponent_cards, own_cards) {
     var msg = {
         in_game: true,
         type: "add_to_battlezone",
-        hand_position: hand_position
+        hand_position: hand_position,
+        use_on_opponent_cards: opponent_cards,
+        use_on_own_cards: own_cards
     };
     socket.send(JSON.stringify(msg));
 }

@@ -80,11 +80,13 @@ public class GameCommunicationWrapper {
             throws IOException, GameError {
         System.out.println("End turn");
         gameLoop.endTurn(player);
+        gameLoop.currentStep = MainGameLoop.Step.MANA;
     }
 
     @HandleWebSocketType(PLACE_MANA)
     public static void handlePlaceMana(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
             throws IOException, GameError {
+        checkCorrectStep(gameLoop, MainGameLoop.Step.MANA);
         System.out.println("Place mana");
         int handPosition = jsonObject.getInt(HAND_POSITION);
         gameLoop.placeMana(player, handPosition);
@@ -93,6 +95,7 @@ public class GameCommunicationWrapper {
     @HandleWebSocketType(ADD_TO_BATTLEZONE)
     public static void handleAddToBattleZone(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
             throws IOException, GameError {
+        checkCorrectStep(gameLoop, MainGameLoop.Step.MANA, MainGameLoop.Step.SUMMON);
         System.out.println("Add to battle zone");
         int handPosition = jsonObject.getInt(HAND_POSITION);
         ArrayList<Integer> useOnOpponentCards = new ArrayList<>();
@@ -100,28 +103,34 @@ public class GameCommunicationWrapper {
         ArrayList<Integer> useOnOwnCards = new ArrayList<>();
         jsonObject.getJSONArray(USE_ON_OWN_CARDS).forEach(position -> useOnOwnCards.add((int)position));
         gameLoop.addToBattleZone(player, handPosition, useOnOpponentCards, useOnOwnCards);
+        gameLoop.currentStep = MainGameLoop.Step.SUMMON;
     }
 
     @HandleWebSocketType(ATTACK_PLAYER)
     public static void handleAttackPlayer(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
             throws IOException, GameError {
+        checkCorrectStep(gameLoop, MainGameLoop.Step.MANA, MainGameLoop.Step.SUMMON, MainGameLoop.Step.BATTLE);
         System.out.println("Attack player");
         int battleZonePosition = jsonObject.getInt(BATTLE_ZONE_POSITION);
         gameLoop.attackPlayer(player, battleZonePosition);
+        gameLoop.currentStep = MainGameLoop.Step.BATTLE;
     }
 
     @HandleWebSocketType(ATTACK_CREATURE)
     public static void handleAttackCreature(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
             throws IOException, GameError {
+        checkCorrectStep(gameLoop, MainGameLoop.Step.MANA, MainGameLoop.Step.SUMMON, MainGameLoop.Step.BATTLE);
         System.out.println("Attack creature");
         int battleZonePosition = jsonObject.getInt(BATTLE_ZONE_POSITION);
         int attackCreatureInPosition = jsonObject.getInt(ATTACK_CREATURE_IN_POSITION);
         gameLoop.attackCreature(player, battleZonePosition, attackCreatureInPosition);
+        gameLoop.currentStep = MainGameLoop.Step.BATTLE;
     }
 
     @HandleWebSocketType(USE_SHIELD_TRIGGER)
     public static void handleShieldTrigger(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
             throws IOException, GameError {
+        checkCorrectStep(gameLoop, MainGameLoop.Step.BATTLE);
         System.out.println("Shield interaction");
         boolean useShieldTrigger = jsonObject.getBoolean(USE_SHIELD_TRIGGER);
         int handPosition = jsonObject.getInt(HAND_POSITION);
@@ -135,6 +144,7 @@ public class GameCommunicationWrapper {
     @HandleWebSocketType(USE_BLOCKER)
     public static void handleBlockerInteraction(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
             throws IOException, GameError {
+        checkCorrectStep(gameLoop, MainGameLoop.Step.BATTLE);
         System.out.println("Blocker interaction");
         int battleZonePosition = jsonObject.getInt(BATTLE_ZONE_POSITION);
         gameLoop.blockerInteraction(player, battleZonePosition);
@@ -143,6 +153,7 @@ public class GameCommunicationWrapper {
     @HandleWebSocketType(USE_SPELL)
     public static void handleSpellCard(JSONObject jsonObject, MainGameLoop gameLoop, MainGameLoop.Player player)
             throws IOException, GameError {
+        checkCorrectStep(gameLoop, MainGameLoop.Step.MANA, MainGameLoop.Step.SUMMON);
         System.out.println("Spell card used");
         int handPosition = jsonObject.getInt(HAND_POSITION);
         ArrayList<Integer> useOnOpponentCards = new ArrayList<>();
@@ -150,5 +161,22 @@ public class GameCommunicationWrapper {
         ArrayList<Integer> useOnOwnCards = new ArrayList<>();
         jsonObject.getJSONArray(USE_ON_OWN_CARDS).forEach(position -> useOnOwnCards.add((int)position));
         gameLoop.useSpellCard(player, handPosition, useOnOpponentCards, useOnOwnCards);
+        gameLoop.currentStep = MainGameLoop.Step.SUMMON;
+    }
+
+    private static void checkCorrectStep(MainGameLoop gameLoop, MainGameLoop.Step... requiredSteps) throws GameError {
+        boolean isRequiredStep = false;
+        String reqStepsString = "";
+        for (MainGameLoop.Step step : requiredSteps) {
+            reqStepsString += " " + step;
+            if (step == gameLoop.currentStep) {
+                isRequiredStep = true;
+            }
+        }
+        if (!isRequiredStep) {
+            System.out.println("Step error: " + reqStepsString);
+            String error = "Current step = " + gameLoop.currentStep + ", while required steps are:" + reqStepsString;
+            throw new GameError(GameError.ErrorCode.WRONG_STEP, error);
+        }
     }
 }
