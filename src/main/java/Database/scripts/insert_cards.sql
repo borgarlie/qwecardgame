@@ -226,6 +226,70 @@ INSERT INTO cards
     0, 0, 0, 0,
     'TAP_TWO_OPPONENT_CREATURES', 'NONE', 'NONE', 'NONE');
 
+-- 15 / 110. Skipped. search your deck effect.
+--INSERT INTO cards
+--    (name, type, race, is_spell_card,
+--    mana_cost, power, power_attacker, blocker,
+--    speed_attacker, slayer, shield_trigger, can_attack_player,
+--    can_attack_creature, break_shields, must_attack,
+--    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+--    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+--    VALUES
+--    ('Rayla, Truth Enforcer', "LIGHT", "Berserker", 0,
+--    6, 3000, 0, 0,
+--    0, 0, 0, 1,
+--    1, 1, 0,
+--    0, 0, 0, 0,
+--    'Something..', 'NONE', 'NONE', 'NONE');
+
+-- 16 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Reusol, the Oracle', "LIGHT", "Light Bringer", 0,
+    2, 2000, 0, 0,
+    0, 0, 0, 1,
+    1, 1, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
+
+-- 17 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Ruby Grass', "LIGHT", "Starlight Tree", 0,
+    3, 3000, 0, 1,
+    0, 0, 0, 0,
+    1, 0, 0,
+    0, 0, 1, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
+
+-- 18 / 110
+INSERT INTO cards
+    (name, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Senatine Jade Tree', "LIGHT", "Starlight Tree", 0,
+    3, 4000, 0, 1,
+    0, 0, 0, 0,
+    1, 0, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
+
 -- Immortal baron, Vorg
 -- Brawler zyler
 -- stonesaur
