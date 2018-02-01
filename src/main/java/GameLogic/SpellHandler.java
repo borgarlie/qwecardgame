@@ -112,6 +112,26 @@ public class SpellHandler {
         sendJsonMessageToOtherPlayer(currentPlayer, mainGameLoop, spellCard, useOnOpponentCards, useOnOwnCards);
     }
 
+    @HandleSpellEffect(TAP_ONE_OPPONENT_CREATURE)
+    public static void handleTapOneOpponentCreature(
+            MainGameLoop.Player currentPlayer,
+            MainGameLoop mainGameLoop,
+            Card spellCard,
+            List<Integer> useOnOpponentCards,
+            List<Integer> useOnOwnCards) throws GameError, IOException {
+        if (useOnOpponentCards.size() > 1) {
+            throw new GameError(
+                    GameError.ErrorCode.NOT_ALLOWED,
+                    "Can not use spell effect " + TAP_ONE_OPPONENT_CREATURE + " on more than 1 creature");
+        }
+        PlayerState otherPlayerState = mainGameLoop.getOtherPlayerState(currentPlayer);
+        System.out.println("Using spell effect TAP_ONE_OPPONENT_CREATURE");
+        // Tap one opponent creature
+        useOnOpponentCards.forEach(otherPlayerState::tapCreature);
+        // Send json to other player
+        sendJsonMessageToOtherPlayer(currentPlayer, mainGameLoop, spellCard, useOnOpponentCards, useOnOwnCards);
+    }
+
     // Only send after making sure the spell effect is triggered
     private static void sendJsonMessageToOtherPlayer(
             MainGameLoop.Player currentPlayer,
