@@ -1,42 +1,40 @@
 import API.Game.Cards;
-import API.Game.WebSocketEndpoint;
 import API.Menu.DeckBuilder;
-import Public.Webapp;
+import API.Oauth.GoogleOAuth;
 import io.javalin.Javalin;
 
-import static io.javalin.ApiBuilder.*;
+import static API.Game.WebSocketHandler.*;
+import static io.javalin.apibuilder.ApiBuilder.*;
 
 
 public class Main {
 
     public static void main(String[] args) {
 
-        // Setup the REST API and web app
+        // Setup the REST API
         Javalin app = Javalin.create()
                 .port(1337)
-                .enableStaticFiles("html");
-
-        // Web app
-        app.get("/qwe", Webapp.webapp);
+                .enableCorsForAllOrigins();
 
         // REST API
         app.routes(() -> {
-            path("cards", () -> {
-                get(Cards.getAll);
-            });
+            path("api/auth/google", () -> post(GoogleOAuth.login));
+            path("cards", () -> get(Cards.getAll));
             path("deck", () -> {
                 post(DeckBuilder.createNew);
-                path("id/:id", () -> {
-                    put(DeckBuilder.update);
-                });
-                path("username/:username", () -> {
-                    get(DeckBuilder.getDecksByUsername);
-                });
+                path("id/:id", () -> put(DeckBuilder.update));
+                path("username/:username", () -> get(DeckBuilder.getDecksByUsername));
             });
         });
 
         // WebSocket - used for the actual gameplay and menu
-        app.ws("/game", WebSocketEndpoint.class);
+        app.ws("/game", ws -> {
+            ws.onConnect(onConnect);
+            ws.onMessage(onMessage);
+            ws.onMessage(onBinaryMessage);
+            ws.onClose(onClose);
+            ws.onError(onError);
+        });
 
         // Start the server
         app.start();

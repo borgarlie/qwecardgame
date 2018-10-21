@@ -1,6 +1,6 @@
 package GameLogic;
 
-import API.Game.WebSocketEndpoint;
+import API.Game.WebSocketHandler;
 import Pojos.GameIdAndPlayerId;
 import Pojos.UsernameAndDeckId;
 import Utils.HandleWebSocketType;
@@ -61,7 +61,7 @@ public class MenuCommunicationWrapper {
     @HandleWebSocketType(PLAY_REQUEST)
     public static void handlePlayRequest(JSONObject jsonObject, Session session) throws IOException {
         System.out.println("Play request initiated");
-        String initiatingUser = WebSocketEndpoint.waitingPlayersSessions.get(session);
+        String initiatingUser = WebSocketHandler.waitingPlayersSessions.get(session);
 
         // TODO: Make sure that a user can only have one active request
 
@@ -69,7 +69,7 @@ public class MenuCommunicationWrapper {
         int deckId = jsonObject.getInt(DECK_ID);
         UsernameAndDeckId usernameAndDeckId = new UsernameAndDeckId(requestedUser, deckId);
         requests.put(initiatingUser, usernameAndDeckId);
-        Session requestedUserSession = WebSocketEndpoint.waitingPlayers.get(requestedUser);
+        Session requestedUserSession = WebSocketHandler.waitingPlayers.get(requestedUser);
         String json = new JSONObject()
                 .put(TYPE, PLAY_REQUEST)
                 .put(USERNAME, initiatingUser)
@@ -84,14 +84,14 @@ public class MenuCommunicationWrapper {
         boolean accepted = jsonObject.getBoolean(ACCEPT_REQUEST);
         String acceptedRequestFromUser = jsonObject.getString(USERNAME);
         // Make sure that the user actually has sent a request, and it is still valid-
-        String thisUser = WebSocketEndpoint.waitingPlayersSessions.get(session);
+        String thisUser = WebSocketHandler.waitingPlayersSessions.get(session);
         String expectedUser = requests.get(acceptedRequestFromUser).getUsername();
         if (expectedUser == null || !thisUser.equals(expectedUser)) {
             System.out.println("Error while accepting request");
             // TODO: Handle error!
         }
         // Send game denied or accepted to requesting user
-        Session requestUser = WebSocketEndpoint.waitingPlayers.get(acceptedRequestFromUser);
+        Session requestUser = WebSocketHandler.waitingPlayers.get(acceptedRequestFromUser);
         String json = new JSONObject()
                 .put(TYPE, ACCEPT_REQUEST)
                 .put(ACCEPT_REQUEST, accepted)
@@ -116,9 +116,9 @@ public class MenuCommunicationWrapper {
                 GameIdAndPlayerId idPlayer2 = new GameIdAndPlayerId(gameId, MainGameLoop.Player.PLAYER2);
                 // Requesting user is always player 1 and accepting user is always player 2.
                 // Who starts is randomized in MainGameLoop init.
-                WebSocketEndpoint.sessions.put(requestUser, idPlayer1);
-                WebSocketEndpoint.sessions.put(session, idPlayer2);
-                WebSocketEndpoint.games.put(gameId, mainGameLoop);
+                WebSocketHandler.sessions.put(requestUser, idPlayer1);
+                WebSocketHandler.sessions.put(session, idPlayer2);
+                WebSocketHandler.games.put(gameId, mainGameLoop);
             } catch (GameError gameError) {
                 gameError.printStackTrace();
                 // TODO: Handle game setup error
@@ -131,7 +131,7 @@ public class MenuCommunicationWrapper {
     }
 
     public static void endGame(String gameId) throws GameError {
-        MainGameLoop game = WebSocketEndpoint.games.get(gameId);
+        MainGameLoop game = WebSocketHandler.games.get(gameId);
         if (game.getTurn() != MainGameLoop.Player.NONE) {
             System.out.println("Bad state. Trying to end game while Player != NONE");
             throw new GameError(GameError.ErrorCode.BAD_STATE,
@@ -141,9 +141,9 @@ public class MenuCommunicationWrapper {
         // deleting game
         Session player1Session = game.getCurrentPlayerState(MainGameLoop.Player.PLAYER1).session;
         Session player2Session = game.getCurrentPlayerState(MainGameLoop.Player.PLAYER2).session;
-        WebSocketEndpoint.sessions.remove(player1Session);
-        WebSocketEndpoint.sessions.remove(player2Session);
-        WebSocketEndpoint.games.remove(gameId);
+        WebSocketHandler.sessions.remove(player1Session);
+        WebSocketHandler.sessions.remove(player2Session);
+        WebSocketHandler.games.remove(gameId);
     }
 
     // TODO: Implement withdraw request

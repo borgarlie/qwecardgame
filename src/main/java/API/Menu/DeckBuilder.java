@@ -53,7 +53,7 @@ public class DeckBuilder {
     };
 
     public static Handler getDecksByUsername = ctx -> {
-        String username = ctx.param("username");
+        String username = ctx.pathParam("username");
         List<Deck> decks = DeckDatabase.getAllForUsername(username);
         HashMap<String, Object> map = new HashMap<>();
         map.put("decks", decks);
@@ -67,7 +67,7 @@ public class DeckBuilder {
         Object obj = parser.parse(body);
         JSONObject jsonObject = (JSONObject) obj;
 
-        String deck_id_param = ctx.param("id");
+        String deck_id_param = ctx.pathParam("id");
         if (deck_id_param == null) {
             return;
             // TODO: error handling

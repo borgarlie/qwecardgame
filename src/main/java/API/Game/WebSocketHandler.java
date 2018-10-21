@@ -4,8 +4,8 @@ import GameLogic.GameCommunicationWrapper;
 import GameLogic.MainGameLoop;
 import GameLogic.MenuCommunicationWrapper;
 import Pojos.GameIdAndPlayerId;
+import io.javalin.websocket.*;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.*;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -13,10 +13,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-
-// timeout = 5 minutes
-@WebSocket(maxTextMessageSize = 64 * 1024, maxIdleTime = 1000 * 60 * 5)
-public class WebSocketEndpoint {
+public class WebSocketHandler {
 
     // Messages used in the menu
     public static final String TYPE = "type";
@@ -35,8 +32,7 @@ public class WebSocketEndpoint {
 
     private static int nextUserNumber = 1; // Assign to username for next connecting user
 
-    @OnWebSocketConnect
-    public void onConnection(Session session) throws IOException {
+    public static ConnectHandler onConnect = session -> {
         System.out.println("Connection established");
         sendPlayerList(session);
         String username = "User" + nextUserNumber++;
@@ -44,9 +40,17 @@ public class WebSocketEndpoint {
         waitingPlayers.put(username, session);
         // Broadcast that a new player has joined and is available
         broadcastNewPlayer(username);
-    }
+    };
 
-    private void sendPlayerList(Session session) throws IOException {
+    public static CloseHandler onClose = (session, statusCode, reason) -> {
+        System.out.println("Connection closed with status: " + statusCode + ", and reason: " + reason);
+        String username = waitingPlayersSessions.get(session);
+        waitingPlayersSessions.remove(session);
+        waitingPlayers.remove(username);
+        broadcastPlayerLeft(username);
+    };
+
+    private static void sendPlayerList(Session session) throws IOException {
         ArrayList<String> users = new ArrayList<>();
         waitingPlayers.keySet().forEach(users::add);
         String json = new JSONObject()
@@ -56,33 +60,30 @@ public class WebSocketEndpoint {
         session.getRemote().sendString(json);
     }
 
-    @OnWebSocketClose
-    public void onClose(Session session, int status, String reason) {
-        System.out.println("Connection closed with status: " + status + ", and reason: " + reason);
-        String username = waitingPlayersSessions.get(session);
-        waitingPlayersSessions.remove(session);
-        waitingPlayers.remove(username);
-        broadcastPlayerLeft(username);
-    }
-
-    @OnWebSocketMessage
-    public void onString(Session session, String message) throws IOException {
+    public static MessageHandler onMessage = (session, message) -> {
         System.out.println("Message receieved as string");
         onText(session, message);
-    }
+    };
 
     // Currently ignoring offset
-    @OnWebSocketMessage
-    public void onBytes(Session session, byte buf[], int offset, int length) throws IOException {
+    public static BinaryMessageHandler onBinaryMessage = (session, bytes, offset, length) -> {
         System.out.println("Message received as byte");
-        String message = new String(buf);
-        onText(session, message);
-    }
+//        String message = new String(bytes);
+        // TODO: Fix bytes
+        String message = "";
 
-    private void onText(Session session, String message) throws IOException {
+        // TODO: Why does not BinaryMessageHandler throw exception?
+        try {
+            onText(session, message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    };
+
+    private static void onText(Session session, String message) throws IOException {
         if (session.isOpen()) {
             JSONObject jsonObject = new JSONObject(message);
-            Boolean inGame = jsonObject.getBoolean(IN_GAME);
+            boolean inGame = jsonObject.getBoolean(IN_GAME);
             if (inGame) {
                 GameIdAndPlayerId gameIdAndPlayerId = sessions.get(session);
                 MainGameLoop gameLoop = games.get(gameIdAndPlayerId.getGameId());
@@ -124,8 +125,8 @@ public class WebSocketEndpoint {
         });
     }
 
-    @OnWebSocketError
-    public void onError(Session session, Throwable error) {
-        System.out.println("Error occured: " + error);
-    }
+    public static ErrorHandler onError = (session, throwable) -> {
+        System.out.println("Error occured: " + throwable);
+    };
+
 }
