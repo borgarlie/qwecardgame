@@ -22,6 +22,9 @@ public class JWTAccessManager implements AccessManager {
     }
 
     private Role extractRole(Context context) {
+
+        System.out.println("Extracting role");
+
         if (!JavalinJWT.containsJWT(context)) {
             return defaultRole;
         }
@@ -36,9 +39,24 @@ public class JWTAccessManager implements AccessManager {
     public void manage(Handler handler, Context context, Set<Role> permittedRoles) throws Exception {
         Role role = extractRole(context);
 
+        System.out.println("Got role: " + role.toString());
+
+        System.out.println(permittedRoles);
+        if (permittedRoles.isEmpty()) {
+            System.out.println("Empty permitted roles");
+        }
+
+        permittedRoles.forEach(r -> {
+            System.out.println("Allowed role = " + r.toString());
+        });
+
+        System.out.println(permittedRoles.contains(role));
+
         if (permittedRoles.contains(role)) {
+            System.out.println("Authorized");
             handler.handle(context);
         } else {
+            System.out.println("Unauthorized");
             context.status(401).result("Unauthorized");
         }
     }

@@ -65,6 +65,9 @@ public class MenuCommunicationWrapper {
 
         // TODO: Make sure that a user can only have one active request
 
+        // TODO: Make sure that a user can not request to start a game with self
+
+        // TODO: Fetch user ID from the user name.
         String requestedUser = jsonObject.getString(USERNAME);
         int deckId = jsonObject.getInt(DECK_ID);
         UsernameAndDeckId usernameAndDeckId = new UsernameAndDeckId(requestedUser, deckId);

@@ -2,9 +2,9 @@
 -- Standard deck 1
 
 INSERT INTO decks
-    (deck_name, username)
+    (deck_name, user_id)
     VALUES
-    ('Standard 1', "standard");
+    ('Standard 1', 0);
 
 INSERT INTO deck_card
     (deck_id, card_id, amount)
@@ -39,9 +39,9 @@ INSERT INTO deck_card
 -- Standard deck 2
 
 INSERT INTO decks
-    (deck_name, username)
+    (deck_name, user_id)
     VALUES
-    ('Standard 2', "standard");
+    ('Standard 2', 0);
 
 INSERT INTO deck_card
     (deck_id, card_id, amount)
@@ -76,9 +76,9 @@ INSERT INTO deck_card
 -- Standard deck 3 - spells only
 
 INSERT INTO decks
-    (deck_name, username)
+    (deck_name, user_id)
     VALUES
-    ('Standard 3 - spells only', "standard");
+    ('Standard 3 - spells only', 0);
 
 INSERT INTO deck_card
     (deck_id, card_id, amount)

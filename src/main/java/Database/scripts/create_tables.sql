@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS cards;
 DROP TABLE IF EXISTS decks;
 DROP TABLE IF EXISTS deck_card;
+DROP TABLE IF EXISTS user;
 
 CREATE TABLE cards (
     card_id integer PRIMARY KEY,
@@ -32,8 +33,8 @@ CREATE TABLE cards (
 CREATE TABLE decks (
     deck_id integer PRIMARY KEY,
     deck_name text NOT NULL,
-    username text NOT NULL,
-    UNIQUE (deck_name, username)
+    user_id text NOT NULL,
+    UNIQUE (deck_name, user_id)
 );
 
 CREATE TABLE deck_card (
@@ -43,4 +44,12 @@ CREATE TABLE deck_card (
     FOREIGN KEY (deck_id) REFERENCES decks(deck_id),
     FOREIGN KEY (card_id) REFERENCES cards(card_id),
     PRIMARY KEY (deck_id, card_id)
+);
+
+CREATE TABLE users (
+    user_id integer PRIMARY KEY,
+    email text NOT NULL,
+    name text NOT NULL,
+    username text NOT NULL UNIQUE,
+    role text NOT NULL
 );
