@@ -1,16 +1,21 @@
 package API.Game;
 
+import API.authentication.JWTWebSocketAccessManager;
+import API.authentication.Roles;
 import GameLogic.GameCommunicationWrapper;
 import GameLogic.MainGameLoop;
 import GameLogic.MenuCommunicationWrapper;
 import Pojos.GameIdAndPlayerId;
+import Pojos.User;
 import io.javalin.websocket.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WebSocketHandler {
@@ -19,6 +24,7 @@ public class WebSocketHandler {
     public static final String TYPE = "type";
     public static final String IN_GAME = "in_game";
     public static final String CONNECTED_PLAYERS = "connected_players";
+    public static final String ERROR = "error";
 
     // Map containing the game id and player number (1 or 2) for the given session
     public static Map<Session, GameIdAndPlayerId> sessions = new ConcurrentHashMap<>();
@@ -30,10 +36,20 @@ public class WebSocketHandler {
     // username -> session
     public static Map<String, Session> waitingPlayers = new ConcurrentHashMap<>();
 
+    // TODO: Remove this
     private static int nextUserNumber = 1; // Assign to username for next connecting user
 
-    public static ConnectHandler onConnect = session -> {
+    private JWTWebSocketAccessManager accessManager;
+
+    public WebSocketHandler(JWTWebSocketAccessManager accessManager) {
+        this.accessManager = accessManager;
+    }
+
+    public ConnectHandler onConnect = session -> {
         System.out.println("Connection established");
+
+        // TODO: Need to authenticate the user before doing this.
+        // Should have a websocket message used to register player
         sendPlayerList(session);
         String username = "User" + nextUserNumber++;
         waitingPlayersSessions.put(session, username);
@@ -42,7 +58,7 @@ public class WebSocketHandler {
         broadcastNewPlayer(username);
     };
 
-    public static CloseHandler onClose = (session, statusCode, reason) -> {
+    public CloseHandler onClose = (session, statusCode, reason) -> {
         System.out.println("Connection closed with status: " + statusCode + ", and reason: " + reason);
         String username = waitingPlayersSessions.get(session);
         waitingPlayersSessions.remove(session);
@@ -60,19 +76,19 @@ public class WebSocketHandler {
         session.getRemote().sendString(json);
     }
 
-    public static MessageHandler onMessage = (session, message) -> {
+    public MessageHandler onMessage = (session, message) -> {
         System.out.println("Message receieved as string");
         onText(session, message);
     };
 
     // Currently ignoring offset
-    public static BinaryMessageHandler onBinaryMessage = (session, bytes, offset, length) -> {
+    public BinaryMessageHandler onBinaryMessage = (session, bytes, offset, length) -> {
         System.out.println("Message received as byte");
 //        String message = new String(bytes);
         // TODO: Fix bytes
         String message = "";
 
-        // TODO: Why does not BinaryMessageHandler throw exception?
+        // TODO: Remove try catch when Javalin has been updated
         try {
             onText(session, message);
         } catch (IOException e) {
@@ -80,9 +96,22 @@ public class WebSocketHandler {
         }
     };
 
-    private static void onText(Session session, String message) throws IOException {
+    // TODO: Test websocket authorization
+    private void onText(Session session, String message) throws IOException {
         if (session.isOpen()) {
             JSONObject jsonObject = new JSONObject(message);
+            // Authenticate the session.
+            Optional<User> user = this.accessManager.getLoggedInUser(jsonObject, Collections.singleton(Roles.ANYONE));
+            if (!user.isPresent()) {
+                System.out.println("Unauthorized websocket request");
+                String json = new JSONObject()
+                        .put(TYPE, ERROR)
+                        .put(ERROR, "Unauthorized")
+                        .toString();
+                session.getRemote().sendString(json);
+                return;
+            }
+            // User is logged in
             boolean inGame = jsonObject.getBoolean(IN_GAME);
             if (inGame) {
                 GameIdAndPlayerId gameIdAndPlayerId = sessions.get(session);
@@ -125,7 +154,7 @@ public class WebSocketHandler {
         });
     }
 
-    public static ErrorHandler onError = (session, throwable) -> {
+    public ErrorHandler onError = (session, throwable) -> {
         System.out.println("Error occured: " + throwable);
     };
 

@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS cards;
 DROP TABLE IF EXISTS decks;
 DROP TABLE IF EXISTS deck_card;
-DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE cards (
     card_id integer PRIMARY KEY,
@@ -47,7 +47,7 @@ CREATE TABLE deck_card (
 );
 
 CREATE TABLE users (
-    user_id integer PRIMARY KEY,
+    user_id text PRIMARY KEY,
     email text NOT NULL,
     name text NOT NULL,
     username text NOT NULL UNIQUE,

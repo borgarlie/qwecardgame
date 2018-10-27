@@ -1,12 +1,11 @@
 import API.Game.Cards;
+import API.Game.WebSocketHandler;
 import API.Menu.DeckBuilder;
 import API.authentication.GoogleOAuth;
+import API.authentication.JWTWebSocketAccessManager;
 import API.authentication.Roles;
 import Pojos.User;
-import ThirdParty.javalinjwt.JWTAccessManager;
-import ThirdParty.javalinjwt.JWTGenerator;
-import ThirdParty.javalinjwt.JWTProvider;
-import ThirdParty.javalinjwt.JavalinJWT;
+import ThirdParty.javalinjwt.*;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
@@ -18,10 +17,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static API.Game.WebSocketHandler.*;
-
-
 public class Main {
+
+    private static final String USER_ROLE_CLAIM = "role";
+    private static final String USER_ID_CLAIM = "user_id";
 
     public static void main(String[] args) {
 
@@ -35,14 +34,23 @@ public class Main {
         String secret = "very_secret";
         Algorithm algorithm = Algorithm.HMAC256(secret);
         JWTGenerator<User> generator = (user, alg) -> {
-            JWTCreator.Builder token = JWT.create().withClaim("role", user.getRole().name());
+            JWTCreator.Builder token = JWT.create()
+                    .withClaim(USER_ROLE_CLAIM, user.getRole().name())
+                    .withClaim(USER_ID_CLAIM, user.getUserId());
             return token.sign(alg);
         };
         JWTVerifier verifier = JWT.require(algorithm).build();
         JWTProvider provider = new JWTProvider(algorithm, generator, verifier);
 
-        JWTAccessManager accessManager = new JWTAccessManager("role", Roles.rolesMapping, Roles.ANYONE);
+        JWTAccessManager accessManager = new JWTAccessManager(USER_ROLE_CLAIM, Roles.rolesMapping, Roles.ANYONE);
         app.accessManager(accessManager);
+
+//        app.accessManager()
+
+        JWTWebSocketAccessManager webSocketAccessManager
+            = new JWTWebSocketAccessManager(USER_ROLE_CLAIM, USER_ID_CLAIM, Roles.rolesMapping, Roles.ANYONE, provider);
+
+        WebSocketHandler wsHandler = new WebSocketHandler(webSocketAccessManager);
 
         GoogleOAuth googleOAuth = new GoogleOAuth(provider);
 
@@ -52,6 +60,9 @@ public class Main {
 
         // REST API
         // TODO: Find a better way to declare roles
+
+        // TODO: For some reason, cors requests get blocked by access manager.
+//        app.post("api/auth/google", googleOAuth.login);
         app.post("api/auth/google", googleOAuth.login, Collections.singleton(Roles.ANYONE));
         app.get("cards", Cards.getAll, Collections.singleton(Roles.ANYONE));
         app.get("deck/username/:username", DeckBuilder.getDecksByUsername,
@@ -60,15 +71,19 @@ public class Main {
         app.put("deck/id/:id", DeckBuilder.update, new HashSet<>(Arrays.asList(Roles.USER, Roles.ADMIN)));
 
         // TODO: Why does this work and not the other one? seems like only post is the problem? (and put maybe)
-        app.get("/test", ctx -> ctx.json("TEST SOMETHING"), Collections.singleton(Roles.ANYONE));
+        app.get("/testget", ctx -> ctx.json("TEST SOMETHING"), Collections.singleton(Roles.ANYONE));
+
+        app.post("/api/testpost", ctx -> {
+            ctx.json("TEST something AGAIN");
+        }, Collections.singleton(Roles.ANYONE));
 
         // WebSocket - used for the actual gameplay and menu
         app.ws("/game", ws -> {
-            ws.onConnect(onConnect);
-            ws.onMessage(onMessage);
-            ws.onMessage(onBinaryMessage);
-            ws.onClose(onClose);
-            ws.onError(onError);
+            ws.onConnect(wsHandler.onConnect);
+            ws.onMessage(wsHandler.onMessage);
+            ws.onMessage(wsHandler.onBinaryMessage);
+            ws.onClose(wsHandler.onClose);
+            ws.onError(wsHandler.onError);
         });
 
         // Start the server

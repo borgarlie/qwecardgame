@@ -32,7 +32,7 @@ public class UserDatabase {
 
     private static User buildUserFromResultSet(ResultSet rs) throws SQLException {
         return User.builder()
-                .userId(rs.getInt("user_id"))
+                .userId(rs.getString("user_id"))
                 .email(rs.getString("email"))
                 .name(rs.getString("name"))
                 .username(rs.getString("username"))
@@ -40,12 +40,12 @@ public class UserDatabase {
                 .build();
     }
 
-    public static Optional<User> get(int id) {
+    public static Optional<User> get(String id) {
         String sql = "SELECT * FROM users WHERE user_id = ?";
         Connection conn = getConnection();
         try {
             PreparedStatement pstmt  = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
+            pstmt.setString(1, id);
             ResultSet rs  = pstmt.executeQuery();
             if (rs.next()) {
                 User user = buildUserFromResultSet(rs);
@@ -61,13 +61,13 @@ public class UserDatabase {
     /*
         Returns the id of the created user
      */
-    public static int create(User user) {
+    public static String create(User user) {
         String sql = "INSERT INTO users(user_id, email, name, username, role) VALUES(?, ?, ?, ?, ?)";
         Connection conn = DatabaseUtils.getConnection();
         PreparedStatement pstmt;
         try {
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, user.getUserId());
+            pstmt.setString(1, user.getUserId());
             pstmt.setString(2, user.getEmail());
             pstmt.setString(3, user.getName());
             pstmt.setString(4, user.getUsername());
@@ -77,7 +77,7 @@ public class UserDatabase {
             System.out.println(e.getMessage());
             // TODO: Should handle error somehow
             // Just throw SQL exceptions ?
-            return -1;
+            return null;
         }
         return user.getUserId();
     }
@@ -88,7 +88,7 @@ public class UserDatabase {
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, user.getUsername());
-            pstmt.setInt(2, user.getUserId());
+            pstmt.setString(2, user.getUserId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());

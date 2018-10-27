@@ -9,6 +9,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.common.base.Strings;
 import io.javalin.Handler;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -53,7 +54,8 @@ public class GoogleOAuth {
             Payload payload = idToken.getPayload();
 
             // Get profile information from payload
-            int userId = Integer.parseInt(payload.getSubject());
+//            int userId = Integer.parseInt(payload.getSubject());
+            String userId = payload.getSubject();
             String email = payload.getEmail();
             String name = (String) payload.get("name");
 
@@ -71,8 +73,8 @@ public class GoogleOAuth {
                         .username(name)
                         .role(Roles.USER)
                         .build();
-                int createdUserValue = UserDatabase.create(newUser);
-                if (createdUserValue < 0) {
+                String createdUserId = UserDatabase.create(newUser);
+                if (Strings.isNullOrEmpty(createdUserId)) {
                     System.out.println("Error when creating user with userId: " + userId);
                     returnMap.put("Error", "Error while creating user");
                 }
@@ -82,10 +84,12 @@ public class GoogleOAuth {
 
             // Set JWT in header
             String token = this.provider.generateToken(user.get());
-            ctx.header("x-auth-token", token);
+            // TODO: Any reason this needs to be sent in the header?
+//            ctx.header("x-auth-token", token);
 
             // Add user data
             returnMap.put("user", user.get());
+            returnMap.put("jwt", token);
         } else {
             System.out.println("Invalid ID token.");
             returnMap.put("Error", "Invalid ID token");
