@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 
+import static Config.Config.CLIENT_ID;
+
 public class GoogleOAuth {
 
     private String client_id;
@@ -27,8 +29,7 @@ public class GoogleOAuth {
     private JWTProvider provider;
 
     public GoogleOAuth(JWTProvider provider) {
-        // TODO: Get from config
-        this.client_id = "63703877913-ofgcofommqkdhc5b8o6c9s63t57lbodq.apps.googleusercontent.com";
+        this.client_id = CLIENT_ID;
         this.jacksonFactory = new JacksonFactory();
         this.httpTransport = new NetHttpTransport();
         this.verifier = new GoogleIdTokenVerifier.Builder(httpTransport, jacksonFactory)

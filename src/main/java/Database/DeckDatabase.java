@@ -164,12 +164,7 @@ public class DeckDatabase {
                 List<CardIdWithAmount> cardIdsWithAmount = getCardIdsWithAmount(deck_id);
                 List<Card> cards = CardDatabase.getByIds(cardIdsWithAmount);
                 List<CardWithAmount> cardsWithAmount = mergeCardsAndAmount(cardIdsWithAmount, cards);
-                Deck deck = Deck.builder()
-                        .id(deck_id)
-                        .name(rs.getString("deck_name"))
-                        .username(rs.getString("username"))
-                        .cards(cardsWithAmount)
-                        .build();
+                Deck deck = buildDeckFromResultSet(rs, cardsWithAmount);
                 decks.add(deck);
             }
         } catch (SQLException e) {
@@ -189,11 +184,7 @@ public class DeckDatabase {
                 List<CardIdWithAmount> cardIdsWithAmount = getCardIdsWithAmount(id);
                 List<Card> cards = CardDatabase.getByIds(cardIdsWithAmount);
                 List<CardWithAmount> cardsWithAmount = mergeCardsAndAmount(cardIdsWithAmount, cards);
-                Deck deck = Deck.builder()
-                        .name(rs.getString("deck_name"))
-                        .username(rs.getString("username"))
-                        .cards(cardsWithAmount)
-                        .build();
+                Deck deck = buildDeckFromResultSet(rs, cardsWithAmount);
                 return Optional.of(deck);
             }
             return Optional.empty();
@@ -203,19 +194,11 @@ public class DeckDatabase {
         return Optional.empty();
     }
 
-    public static void main(String[] args) {
-
-//        List<Deck> decks = DeckDatabase.getAllForUsername("TestUser2");
-//        decks.forEach(System.out::println);
-
-//        List<Deck> decks = DeckDatabase.getAllForUsername("TestUser2");
-//        decks.forEach(System.out::println);
-
-        Optional<Deck> deck = DeckDatabase.get(7);
-        if (deck.isPresent()) {
-            System.out.println(deck.get());
-        }
-
-        closeConnection();
+    private static Deck buildDeckFromResultSet(ResultSet rs, List<CardIdWithAmount> cardsWithAmount) throws SQLException {
+        return Deck.builder()
+                .name(rs.getString("deck_name"))
+                .username(rs.getString("username"))
+                .cards(cardsWithAmount)
+                .build();
     }
 }

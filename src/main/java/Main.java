@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
+import static Config.Config.HMAC_SECRET;
+
 public class Main {
 
     private static final String USER_ROLE_CLAIM = "role";
@@ -30,9 +32,7 @@ public class Main {
                 .enableCorsForAllOrigins();
 
         // Access manager
-        // TODO: Get secret from config
-        String secret = "very_secret";
-        Algorithm algorithm = Algorithm.HMAC256(secret);
+        Algorithm algorithm = Algorithm.HMAC256(HMAC_SECRET);
         JWTGenerator<User> generator = (user, alg) -> {
             JWTCreator.Builder token = JWT.create()
                     .withClaim(USER_ROLE_CLAIM, user.getRole().name())
@@ -44,8 +44,6 @@ public class Main {
 
         JWTAccessManager accessManager = new JWTAccessManager(USER_ROLE_CLAIM, Roles.rolesMapping, Roles.ANYONE);
         app.accessManager(accessManager);
-
-//        app.accessManager()
 
         JWTWebSocketAccessManager webSocketAccessManager
             = new JWTWebSocketAccessManager(USER_ROLE_CLAIM, USER_ID_CLAIM, Roles.rolesMapping, Roles.ANYONE, provider);
@@ -60,22 +58,12 @@ public class Main {
 
         // REST API
         // TODO: Find a better way to declare roles
-
-        // TODO: For some reason, cors requests get blocked by access manager.
-//        app.post("api/auth/google", googleOAuth.login);
         app.post("api/auth/google", googleOAuth.login, Collections.singleton(Roles.ANYONE));
         app.get("cards", Cards.getAll, Collections.singleton(Roles.ANYONE));
         app.get("deck/username/:username", DeckBuilder.getDecksByUsername,
                 new HashSet<>(Arrays.asList(Roles.USER, Roles.ADMIN)));
         app.post("deck", DeckBuilder.createNew, new HashSet<>(Arrays.asList(Roles.USER, Roles.ADMIN)));
         app.put("deck/id/:id", DeckBuilder.update, new HashSet<>(Arrays.asList(Roles.USER, Roles.ADMIN)));
-
-        // TODO: Why does this work and not the other one? seems like only post is the problem? (and put maybe)
-        app.get("/testget", ctx -> ctx.json("TEST SOMETHING"), Collections.singleton(Roles.ANYONE));
-
-        app.post("/api/testpost", ctx -> {
-            ctx.json("TEST something AGAIN");
-        }, Collections.singleton(Roles.ANYONE));
 
         // WebSocket - used for the actual gameplay and menu
         app.ws("/game", ws -> {
