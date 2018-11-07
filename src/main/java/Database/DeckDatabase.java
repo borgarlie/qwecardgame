@@ -160,11 +160,11 @@ public class DeckDatabase {
             pstmt.setString(1, username);
             ResultSet rs  = pstmt.executeQuery();
             while (rs.next()) {
-                int deck_id = rs.getInt("deck_id");
-                List<CardIdWithAmount> cardIdsWithAmount = getCardIdsWithAmount(deck_id);
+                int deckId = rs.getInt("deck_id");
+                List<CardIdWithAmount> cardIdsWithAmount = getCardIdsWithAmount(deckId);
                 List<Card> cards = CardDatabase.getByIds(cardIdsWithAmount);
                 List<CardWithAmount> cardsWithAmount = mergeCardsAndAmount(cardIdsWithAmount, cards);
-                Deck deck = buildDeckFromResultSet(rs, cardsWithAmount);
+                Deck deck = buildDeckFromResultSet(rs, deckId, cardsWithAmount);
                 decks.add(deck);
             }
         } catch (SQLException e) {
@@ -184,7 +184,7 @@ public class DeckDatabase {
                 List<CardIdWithAmount> cardIdsWithAmount = getCardIdsWithAmount(id);
                 List<Card> cards = CardDatabase.getByIds(cardIdsWithAmount);
                 List<CardWithAmount> cardsWithAmount = mergeCardsAndAmount(cardIdsWithAmount, cards);
-                Deck deck = buildDeckFromResultSet(rs, cardsWithAmount);
+                Deck deck = buildDeckFromResultSet(rs, id, cardsWithAmount);
                 return Optional.of(deck);
             }
             return Optional.empty();
@@ -194,8 +194,9 @@ public class DeckDatabase {
         return Optional.empty();
     }
 
-    private static Deck buildDeckFromResultSet(ResultSet rs, List<CardIdWithAmount> cardsWithAmount) throws SQLException {
+    private static Deck buildDeckFromResultSet(ResultSet rs, int deckId, List<CardIdWithAmount> cardsWithAmount) throws SQLException {
         return Deck.builder()
+                .id(deckId)
                 .name(rs.getString("deck_name"))
                 .username(rs.getString("username"))
                 .cards(cardsWithAmount)

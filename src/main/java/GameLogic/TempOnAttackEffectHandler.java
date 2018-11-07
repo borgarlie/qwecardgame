@@ -18,7 +18,7 @@ public class TempOnAttackEffectHandler {
     // map of all summon creature effect handlers
     private static Map<TempOnAttackEffect, Method> tempOnAttackEffectHandlers
             = ReflectionUtil.findTempOnAttackEffectMethods(
-                    DestroyCreatureEffectHandler.class, HandleTempOnAttackEffect.class);
+                    TempOnAttackEffectHandler.class, HandleTempOnAttackEffect.class);
 
     /*
         attackingCreatureInPosition = -1 means attacking player
