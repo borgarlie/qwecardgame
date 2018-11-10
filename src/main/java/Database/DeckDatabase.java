@@ -138,7 +138,8 @@ public class DeckDatabase {
         return 0;
     }
 
-    private static List<CardWithAmount> mergeCardsAndAmount(List<CardIdWithAmount> cardIdsWithAmount, List<Card> cards) {
+    private static List<CardWithAmount> mergeCardsAndAmount(
+            List<CardIdWithAmount> cardIdsWithAmount, List<Card> cards) {
         List<CardWithAmount> cardsWithAmount = new ArrayList<>();
         cards.forEach(card -> {
             int amount = getAmountOfCardById(cardIdsWithAmount, card.getCard_id());
@@ -194,7 +195,8 @@ public class DeckDatabase {
         return Optional.empty();
     }
 
-    private static Deck buildDeckFromResultSet(ResultSet rs, int deckId, List<CardIdWithAmount> cardsWithAmount) throws SQLException {
+    private static Deck buildDeckFromResultSet(ResultSet rs, int deckId, List<CardWithAmount> cardsWithAmount)
+            throws SQLException {
         return Deck.builder()
                 .id(deckId)
                 .name(rs.getString("deck_name"))

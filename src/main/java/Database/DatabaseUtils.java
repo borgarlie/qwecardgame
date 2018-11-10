@@ -1,6 +1,8 @@
 package Database;
 
 
+import Config.Config;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -13,7 +15,7 @@ public class DatabaseUtils {
         if (conn == null) {
             try {
                 Class.forName("org.sqlite.JDBC");
-                String url = "jdbc:sqlite://Users/borgarlie/sqlite/test.db";
+                String url = Config.DATABASE_URL;
                 conn = DriverManager.getConnection(url);
                 System.out.println("Connection to SQLite has been established.");
             } catch (SQLException e) {

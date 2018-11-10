@@ -3,9 +3,6 @@ package Pojos;
 import lombok.*;
 import org.json.JSONObject;
 
-import java.util.List;
-import java.util.Optional;
-
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -49,15 +46,22 @@ public class Card {
     boolean destroy_on_win;
 
     // All cards are untapped by default
+    @Builder.Default
     boolean isTapped = false;
     // When a card is summoned to the battle zone, it receives summoning sickness
+    @Builder.Default
     boolean summoningSickness = false;
 
     // Temporal effects
+    @Builder.Default
     private int temp_power = 0;
+    @Builder.Default
     private boolean temp_double_breaker = false; // TODO Use
+    @Builder.Default
     private boolean temp_can_attack_untapped_creatures = false;
+    @Builder.Default
     private boolean temp_can_not_be_blocked = false;
+    @Builder.Default
     private boolean temp_slayer_when_blocked = false;
 
     public void removeTemporalEffects() {
@@ -68,8 +72,11 @@ public class Card {
         this.temp_slayer_when_blocked = false;
     }
 
+    @Builder.Default
     private int temp_on_attack_power = 0;
+    @Builder.Default
     private int temp_on_attack_power_attacker = 0;
+    @Builder.Default
     private boolean temp_on_attack_can_not_be_blocked = false; // TODO: How to use this?
 
     public void removeTempOnAttackEffects() {
