@@ -55,7 +55,6 @@ public class GoogleOAuth {
             Payload payload = idToken.getPayload();
 
             // Get profile information from payload
-//            int userId = Integer.parseInt(payload.getSubject());
             String userId = payload.getSubject();
             String email = payload.getEmail();
             String name = (String) payload.get("name");
@@ -74,21 +73,18 @@ public class GoogleOAuth {
                         .username(name)
                         .role(Roles.USER)
                         .build();
-                String createdUserId = UserDatabase.create(newUser);
-                if (Strings.isNullOrEmpty(createdUserId)) {
+                Optional<String> createdUserId = UserDatabase.create(newUser);
+                if (!createdUserId.isPresent()) {
                     System.out.println("Error when creating user with userId: " + userId);
                     returnMap.put("Error", "Error while creating user");
+                    ctx.json(returnMap);
+                    return;
                 }
-
                 user = Optional.of(newUser);
             }
 
-            // Set JWT in header
+            // Add user data and generate jwt token
             String token = this.provider.generateToken(user.get());
-            // TODO: Any reason this needs to be sent in the header?
-//            ctx.header("x-auth-token", token);
-
-            // Add user data
             returnMap.put("user", user.get());
             returnMap.put("jwt", token);
         } else {

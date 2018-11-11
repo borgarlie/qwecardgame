@@ -58,7 +58,9 @@ public class Main {
 
         // REST API
         // TODO: Find a better way to declare roles
-        app.post("api/auth/google", googleOAuth.login, Collections.singleton(Roles.ANYONE));
+        app.post("auth/google", googleOAuth.login, Collections.singleton(Roles.ANYONE));
+        app.get("auth/verify", (handler) -> handler.json("ok"),
+                new HashSet<>(Arrays.asList(Roles.USER, Roles.ADMIN)));
         app.get("cards", Cards.getAll, Collections.singleton(Roles.ANYONE));
         app.get("deck/username/:username", DeckBuilder.getDecksByUsername,
                 new HashSet<>(Arrays.asList(Roles.USER, Roles.ADMIN)));

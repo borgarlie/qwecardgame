@@ -60,8 +60,10 @@ public class UserDatabase {
 
     /*
         Returns the id of the created user
+        TODO: What to do if username already exists? Just append a random number? or just always do that?
+        TODO: Should be ok to always do that, as long as it is possible to change username
      */
-    public static String create(User user) {
+    public static Optional<String> create(User user) {
         String sql = "INSERT INTO users(user_id, email, name, username, role) VALUES(?, ?, ?, ?, ?)";
         Connection conn = DatabaseUtils.getConnection();
         PreparedStatement pstmt;
@@ -75,11 +77,9 @@ public class UserDatabase {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            // TODO: Should handle error somehow
-            // Just throw SQL exceptions ?
-            return null;
+            return Optional.empty();
         }
-        return user.getUserId();
+        return Optional.of(user.getUserId());
     }
 
     public static boolean updateUsername(User user) {
