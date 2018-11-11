@@ -2,8 +2,7 @@ package API.authentication;
 
 import io.javalin.security.Role;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public enum Roles implements Role {
     ANYONE,
@@ -14,4 +13,8 @@ public enum Roles implements Role {
         put("USER", Roles.USER);
         put("ADMIN", Roles.ADMIN);
     }};
+
+    public static Set<Role> roles(Roles ... roles) {
+        return new HashSet<>(Arrays.asList(roles));
+    }
 }

@@ -82,13 +82,13 @@ public class UserDatabase {
         return Optional.of(user.getUserId());
     }
 
-    public static boolean updateUsername(User user) {
+    public static boolean updateUsername(String userId, String username) {
         String sql = "UPDATE users SET username = ? WHERE user_id = ?";
         Connection conn = getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, user.getUsername());
-            pstmt.setString(2, user.getUserId());
+            pstmt.setString(1, username);
+            pstmt.setString(2, userId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());

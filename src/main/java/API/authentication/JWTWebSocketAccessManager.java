@@ -12,10 +12,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static API.authentication.JWTUtil.USER_ID_CLAIM;
+import static API.authentication.JWTUtil.USER_ROLE_CLAIM;
+
 public class JWTWebSocketAccessManager {
 
-    private String userRoleClaim;
-    private String userIdClaim;
     private Map<String, Role> rolesMapping;
     private Role defaultRole;
     private JWTProvider provider;
@@ -23,13 +24,9 @@ public class JWTWebSocketAccessManager {
     private static final String JWT = "jwt";
 
     public JWTWebSocketAccessManager(
-            String userRoleClaim,
-            String userIdClaim,
             Map<String, Role> rolesMapping,
             Role defaultRole,
             JWTProvider provider) {
-        this.userRoleClaim = userRoleClaim;
-        this.userIdClaim = userIdClaim;
         this.rolesMapping = rolesMapping;
         this.defaultRole = defaultRole;
         this.provider = provider;
@@ -53,12 +50,12 @@ public class JWTWebSocketAccessManager {
             return Optional.empty();
         }
         DecodedJWT jwt = decodedJWT.get();
-        String userLevel = jwt.getClaim(userRoleClaim).asString();
+        String userLevel = jwt.getClaim(USER_ROLE_CLAIM).asString();
         Role role = Optional.ofNullable(this.rolesMapping.get(userLevel)).orElse(defaultRole);
         if (permittedRoles.contains(role)) {
             return Optional.empty();
         }
-        String userId = jwt.getClaim(userIdClaim).asString();
+        String userId = jwt.getClaim(USER_ID_CLAIM).asString();
         return Optional.of(userId);
     }
 
