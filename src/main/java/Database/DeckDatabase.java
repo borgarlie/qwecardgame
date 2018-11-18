@@ -223,4 +223,19 @@ public class DeckDatabase {
                 .cards(cardsWithAmount)
                 .build();
     }
+
+    public static boolean delete(int id) {
+        removeAllCardsFromDeck(id);
+        String sql = "DELETE FROM decks WHERE deck_id = ?";
+        Connection conn = getConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
 }

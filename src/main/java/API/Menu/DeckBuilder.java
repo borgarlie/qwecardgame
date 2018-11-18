@@ -46,6 +46,10 @@ public class DeckBuilder {
                 .build();
 
         int deck_id = DeckDatabase.create(deck);
+        if (deck_id < 0) {
+            ctx.status(400);
+            return;
+        }
         HashMap<String, Object> map = new HashMap<>();
         map.put("deck_id", deck_id);
         ctx.json(map);
@@ -55,7 +59,7 @@ public class DeckBuilder {
         ArrayList<CardIdWithAmount> cardIds = new ArrayList<>();
         for (Object card : cards) {
             JSONObject innerCard = (JSONObject) card;
-            int card_id = ((Long) innerCard.get("id")).intValue();
+            int card_id = ((Long) innerCard.get("card_id")).intValue();
             int amount = ((Long) innerCard.get("amount")).intValue();
             CardIdWithAmount cardIdWithAmount = new CardIdWithAmount(card_id, amount);
             cardIds.add(cardIdWithAmount);
@@ -115,6 +119,34 @@ public class DeckBuilder {
                 .build();
 
         DeckDatabase.update(deck);
+        ctx.json(true);
+    };
+
+    public static Handler delete = ctx -> {
+        String deckIdParam = ctx.pathParam("id");
+        if (Strings.isNullOrEmpty(deckIdParam)) {
+            ctx.status(400);
+            ctx.json(false);
+            return;
+        }
+        int deckId = Integer.parseInt(deckIdParam);
+
+        DecodedJWT jwt = JavalinJWT.getDecodedFromContext(ctx);
+        String userId = jwt.getClaim(USER_ID_CLAIM).asString();
+        boolean userOwnsDeck = userHasAccessToDeck(deckId, userId);
+        if (!userOwnsDeck) {
+            ctx.status(403);
+            ctx.json(false);
+            return;
+        }
+
+        System.out.println("Deleting deck with id: " + deckId);
+        boolean deleted = DeckDatabase.delete(deckId);
+        if (!deleted) {
+            ctx.status(500);
+            ctx.json(false);
+            return;
+        }
         ctx.json(true);
     };
 }

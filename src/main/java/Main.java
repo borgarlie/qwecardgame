@@ -53,6 +53,7 @@ public class Main {
         app.get("deck/me", DeckBuilder.getDecksForUser, roles(Roles.USER, Roles.ADMIN));
         app.post("deck", DeckBuilder.createNew, roles(Roles.USER, Roles.ADMIN));
         app.put("deck/id/:id", DeckBuilder.update, roles(Roles.USER, Roles.ADMIN));
+        app.delete("deck/id/:id", DeckBuilder.delete, roles(Roles.USER, Roles.ADMIN));
 
         // WebSocket - used for the actual gameplay and menu
         app.ws("/game", ws -> {
