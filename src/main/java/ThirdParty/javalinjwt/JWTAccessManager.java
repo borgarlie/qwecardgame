@@ -5,8 +5,6 @@ import io.javalin.Context;
 import io.javalin.Handler;
 import io.javalin.security.AccessManager;
 import io.javalin.security.Role;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.util.Map;
 import java.util.Optional;
@@ -40,7 +38,7 @@ public class JWTAccessManager implements AccessManager {
     @Override
     public void manage(Handler handler, Context context, Set<Role> permittedRoles) throws Exception {
 
-        if (permittedRoles.isEmpty()) {
+        if (permittedRoles.isEmpty() || permittedRoles.contains(this.defaultRole)) {
             // TODO: Is this safe?
             handler.handle(context);
             return;

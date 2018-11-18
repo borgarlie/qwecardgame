@@ -3,6 +3,9 @@ package API.Menu;
 import Database.DeckDatabase;
 import Pojos.CardIdWithAmount;
 import Pojos.Deck;
+import ThirdParty.javalinjwt.JavalinJWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.common.base.Strings;
 import io.javalin.Handler;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -10,8 +13,10 @@ import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+
+import static API.authentication.JWTUtil.USER_ID_CLAIM;
+import static Database.DeckDatabase.userHasAccessToDeck;
 
 public class DeckBuilder {
     public static Handler createNew = ctx -> {
@@ -21,29 +26,23 @@ public class DeckBuilder {
         Object obj = parser.parse(body);
         JSONObject jsonObject = (JSONObject) obj;
 
-        String deck_name = (String) jsonObject.get("deck_name");
-        String username = (String) jsonObject.get("username");
-        JSONArray cards = (JSONArray) jsonObject.get("card_ids");
-        ArrayList<CardIdWithAmount> card_ids = new ArrayList<>();
+        String deckName = (String) jsonObject.get("deck_name");
 
-        Iterator i = cards.iterator();
-        while (i.hasNext()) {
-            JSONObject innerCard = (JSONObject) i.next();
-            int card_id = ((Long) innerCard.get("id")).intValue();
-            int amount = ((Long) innerCard.get("amount")).intValue();
-            CardIdWithAmount cardIdWithAmount = new CardIdWithAmount(card_id, amount);
-            card_ids.add(cardIdWithAmount);
-        }
+        DecodedJWT jwt = JavalinJWT.getDecodedFromContext(ctx);
+        String userId = jwt.getClaim(USER_ID_CLAIM).asString();
+
+        JSONArray cards = (JSONArray) jsonObject.get("card_ids");
+        ArrayList<CardIdWithAmount> cardIds = getCardsFromJsonArray(cards);
 
         System.out.println("Saving new deck: ");
-        System.out.println("Deck name: " + deck_name);
-        System.out.println("Username: " + username);
-        System.out.println("Card Ids: " + card_ids);
+        System.out.println("Deck name: " + deckName);
+        System.out.println("UserId: " + userId);
+        System.out.println("Card Ids: " + cardIds);
 
         Deck deck = Deck.builder()
-                .name(deck_name)
-                .username(username)
-                .cardIds(card_ids)
+                .name(deckName)
+                .userId(userId)
+                .cardIds(cardIds)
                 .build();
 
         int deck_id = DeckDatabase.create(deck);
@@ -52,9 +51,22 @@ public class DeckBuilder {
         ctx.json(map);
     };
 
-    public static Handler getDecksByUsername = ctx -> {
-        String username = ctx.pathParam("username");
-        List<Deck> decks = DeckDatabase.getAllForUsername(username);
+    private static ArrayList<CardIdWithAmount> getCardsFromJsonArray(JSONArray cards) {
+        ArrayList<CardIdWithAmount> cardIds = new ArrayList<>();
+        for (Object card : cards) {
+            JSONObject innerCard = (JSONObject) card;
+            int card_id = ((Long) innerCard.get("id")).intValue();
+            int amount = ((Long) innerCard.get("amount")).intValue();
+            CardIdWithAmount cardIdWithAmount = new CardIdWithAmount(card_id, amount);
+            cardIds.add(cardIdWithAmount);
+        }
+        return cardIds;
+    }
+
+    public static Handler getDecksForUser = ctx -> {
+        DecodedJWT jwt = JavalinJWT.getDecodedFromContext(ctx);
+        String userId = jwt.getClaim(USER_ID_CLAIM).asString();
+        List<Deck> decks = DeckDatabase.getAllForUser(userId);
         HashMap<String, Object> map = new HashMap<>();
         map.put("decks", decks);
         ctx.json(map);
@@ -67,38 +79,39 @@ public class DeckBuilder {
         Object obj = parser.parse(body);
         JSONObject jsonObject = (JSONObject) obj;
 
-        String deck_id_param = ctx.pathParam("id");
-        if (deck_id_param == null) {
+        String deckIdParam = ctx.pathParam("id");
+        if (Strings.isNullOrEmpty(deckIdParam)) {
+            ctx.status(400);
+            ctx.json(false);
             return;
-            // TODO: error handling
         }
 
-        int deck_id = Integer.parseInt(deck_id_param);
-        String deck_name = (String) jsonObject.get("deck_name");
-        String username = (String) jsonObject.get("username");
+        int deckId = Integer.parseInt(deckIdParam);
+        String deckName = (String) jsonObject.get("deck_name");
+
+        DecodedJWT jwt = JavalinJWT.getDecodedFromContext(ctx);
+        String userId = jwt.getClaim(USER_ID_CLAIM).asString();
+
+        boolean userOwnsDeck = userHasAccessToDeck(deckId, userId);
+        if (!userOwnsDeck) {
+            ctx.status(403);
+            ctx.json(false);
+            return;
+        }
+
         JSONArray cards = (JSONArray) jsonObject.get("card_ids");
-        ArrayList<CardIdWithAmount> card_ids = new ArrayList<>();
-
-        Iterator i = cards.iterator();
-        while (i.hasNext()) {
-            JSONObject innerCard = (JSONObject) i.next();
-            int card_id = ((Long) innerCard.get("id")).intValue();
-            int amount = ((Long) innerCard.get("amount")).intValue();
-            CardIdWithAmount cardIdWithAmount = new CardIdWithAmount(card_id, amount);
-            card_ids.add(cardIdWithAmount);
-        }
+        ArrayList<CardIdWithAmount> cardIds = getCardsFromJsonArray(cards);
 
         System.out.println("Updating deck: ");
-        System.out.println("Deck Id: " + deck_id);
-        System.out.println("Deck name: " + deck_name);
-        System.out.println("Username: " + username);
-        System.out.println("Card Ids: " + card_ids);
+        System.out.println("Deck Id: " + deckId);
+        System.out.println("Deck name: " + deckName);
+        System.out.println("Card Ids: " + cardIds);
 
         Deck deck = Deck.builder()
-                .id(deck_id)
-                .name(deck_name)
-                .username(username)
-                .cardIds(card_ids)
+                .id(deckId)
+                .name(deckName)
+                .userId(userId)
+                .cardIds(cardIds)
                 .build();
 
         DeckDatabase.update(deck);

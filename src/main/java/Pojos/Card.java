@@ -17,6 +17,7 @@ public class Card {
 
     int card_id;
     String name;
+    String image_file;
     Type type;
     String race;
     boolean is_spell;

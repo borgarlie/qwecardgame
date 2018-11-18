@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE cards (
     card_id integer PRIMARY KEY,
     name text NOT NULL UNIQUE,
+    image_file text NOT NULL,
     type text NOT NULL,
     race text NOT NULL,
     is_spell_card integer NOT NULL,
@@ -30,10 +31,19 @@ CREATE TABLE cards (
     temp_on_attack_effect text NOT NULL
 );
 
+CREATE TABLE users (
+    user_id text PRIMARY KEY,
+    email text NOT NULL,
+    name text NOT NULL,
+    username text NOT NULL UNIQUE,
+    role text NOT NULL
+);
+
 CREATE TABLE decks (
     deck_id integer PRIMARY KEY,
     deck_name text NOT NULL,
     user_id text NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
     UNIQUE (deck_name, user_id)
 );
 
@@ -44,12 +54,4 @@ CREATE TABLE deck_card (
     FOREIGN KEY (deck_id) REFERENCES decks(deck_id),
     FOREIGN KEY (card_id) REFERENCES cards(card_id),
     PRIMARY KEY (deck_id, card_id)
-);
-
-CREATE TABLE users (
-    user_id text PRIMARY KEY,
-    email text NOT NULL,
-    name text NOT NULL,
-    username text NOT NULL UNIQUE,
-    role text NOT NULL
 );

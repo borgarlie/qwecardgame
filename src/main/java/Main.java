@@ -50,7 +50,7 @@ public class Main {
         app.get("auth/verify", (handler) -> handler.json("ok"), roles(Roles.USER, Roles.ADMIN));
         app.put("user/username", UserManager.updateUsername, roles(Roles.USER, Roles.ADMIN));
         app.get("cards", Cards.getAll, roles(Roles.ANYONE));
-        app.get("deck/username/:username", DeckBuilder.getDecksByUsername, roles(Roles.USER, Roles.ADMIN));
+        app.get("deck/me", DeckBuilder.getDecksForUser, roles(Roles.USER, Roles.ADMIN));
         app.post("deck", DeckBuilder.createNew, roles(Roles.USER, Roles.ADMIN));
         app.put("deck/id/:id", DeckBuilder.update, roles(Roles.USER, Roles.ADMIN));
 

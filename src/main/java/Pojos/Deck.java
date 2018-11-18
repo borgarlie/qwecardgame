@@ -14,7 +14,7 @@ import java.util.List;
 public class Deck {
     int id;
     String name;
-    String username;
+    String userId;
     List<CardWithAmount> cards; // Used to get card information when viewing a deck
     List<CardIdWithAmount> cardIds; // alternative when creating a new deck or updating
 

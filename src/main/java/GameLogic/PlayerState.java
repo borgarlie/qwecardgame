@@ -39,13 +39,14 @@ public class PlayerState {
     public PlayerState(MainGameLoop.Player player, Session session, String username, int deck_id) throws GameError {
         this.player = player;
         this.session = session;
+        // TODO: User userId instead of username?
         this.username = username;
         Optional<Deck> optDeck = DeckDatabase.get(deck_id);
         if (!optDeck.isPresent()) {
             throw new GameError(INIT_ERROR, "Deck with id: " + deck_id + " not found");
         }
         initialDeck = optDeck.get();
-        if (!initialDeck.getUsername().equals(username) && !initialDeck.getUsername().equals("standard")) {
+        if (!initialDeck.getUserId().equals(username) && !initialDeck.getUserId().equals("1234567890qwerty")) {
             throw new GameError(INIT_ERROR, "Deck does not belong to this user");
         }
         initPlayerState();

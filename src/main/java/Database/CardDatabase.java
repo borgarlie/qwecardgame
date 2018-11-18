@@ -34,6 +34,7 @@ public class CardDatabase {
         return Card.builder()
                 .card_id(rs.getInt("card_id"))
                 .name(rs.getString("name"))
+                .image_file(rs.getString("image_file"))
                 .type(Card.Type.valueOf(rs.getString("type")))
                 .race(rs.getString("race"))
                 .is_spell(rs.getBoolean("is_spell_card"))

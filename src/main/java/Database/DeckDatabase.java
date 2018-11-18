@@ -10,23 +10,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static Database.DatabaseUtils.closeConnection;
 import static Database.DatabaseUtils.getConnection;
 
 public class DeckDatabase {
+
+    public static boolean userHasAccessToDeck(int deckId, String userId) {
+        String sql = "SELECT user_id FROM decks WHERE deck_id = ?";
+        Connection conn = getConnection();
+        try {
+            PreparedStatement pstmt  = conn.prepareStatement(sql);
+            pstmt.setInt(1, deckId);
+            ResultSet rs  = pstmt.executeQuery();
+            if (rs.next()) {
+                String userIdFromDeck = rs.getString("user_id");
+                if (userId.equals(userIdFromDeck)) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     // TODO: This whole thing should be one atomic operation
     /*
         Returns the id of the created deck
      */
     public static int create(Deck deck) {
-        String sql = "INSERT INTO decks(deck_name, username) VALUES(?, ?)";
+        String sql = "INSERT INTO decks(deck_name, user_id) VALUES(?, ?)";
         Connection conn = DatabaseUtils.getConnection();
         PreparedStatement pstmt;
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, deck.getName());
-            pstmt.setString(2, deck.getUsername());
+            pstmt.setString(2, deck.getUserId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -152,13 +171,13 @@ public class DeckDatabase {
         return cardsWithAmount;
     }
 
-    public static List<Deck> getAllForUsername(String username) {
-        String sql = "SELECT * FROM decks WHERE username = ?";
+    public static List<Deck> getAllForUser(String userId) {
+        String sql = "SELECT * FROM decks WHERE user_id = ?";
         ArrayList<Deck> decks = new ArrayList<>();
         Connection conn = getConnection();
         try {
             PreparedStatement pstmt  = conn.prepareStatement(sql);
-            pstmt.setString(1, username);
+            pstmt.setString(1, userId);
             ResultSet rs  = pstmt.executeQuery();
             while (rs.next()) {
                 int deckId = rs.getInt("deck_id");
@@ -200,7 +219,7 @@ public class DeckDatabase {
         return Deck.builder()
                 .id(deckId)
                 .name(rs.getString("deck_name"))
-                .username(rs.getString("username"))
+                .userId(rs.getString("user_id"))
                 .cards(cardsWithAmount)
                 .build();
     }

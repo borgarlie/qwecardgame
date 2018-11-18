@@ -3,14 +3,14 @@
 
 -- 1 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Chilias, the Oracle', "LIGHT", "Light Bringer", 0,
+    ('Chilias, the Oracle', 'ChiliastheOracle.jpg', 'LIGHT', 'Light Bringer', 0,
     4, 2500, 0, 0,
     0, 0, 0, 1,
     1, 1, 0,
@@ -19,14 +19,14 @@ INSERT INTO cards
 
 -- 2 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Dia Nork, Moonlight Guardian', "LIGHT", "Guardian", 0,
+    ('Dia Nork, Moonlight Guardian', 'Dianorkmoonlightguardian.jpg', 'LIGHT', 'Guardian', 0,
     4, 5000, 0, 1,
     0, 0, 0, 0,
     1, 0, 0,
@@ -35,14 +35,14 @@ INSERT INTO cards
 
 -- 3 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Emerald Grass', "LIGHT", "Starlight Tree", 0,
+    ('Emerald Grass', 'EmeraldGrass.jpg', 'LIGHT', 'Starlight Tree', 0,
     2, 3000, 0, 1,
     0, 0, 0, 0,
     1, 0, 0,
@@ -51,14 +51,14 @@ INSERT INTO cards
 
 -- 4 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Frei, Vizier of Air', "LIGHT", "Initiate", 0,
+    ('Frei, Vizier of Air', 'Freivizierofair.jpg', 'LIGHT', 'Initiate', 0,
     4, 3000, 0, 0,
     0, 0, 0, 1,
     1, 1, 0,
@@ -67,14 +67,14 @@ INSERT INTO cards
 
 -- 5 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Gran Gure, Space Guardian', "LIGHT", "Guardian", 0,
+    ('Gran Gure, Space Guardian', 'Grangurespaceguardian.jpg', 'LIGHT', 'Guardian', 0,
     6, 9000, 0, 1,
     0, 0, 0, 0,
     1, 0, 0,
@@ -84,14 +84,14 @@ INSERT INTO cards
 
 -- 6 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Holy Awe', "LIGHT", "NONE", 1,
+    ('Holy Awe', 'HolyAwe.jpg', 'LIGHT', 'NONE', 1,
     6, 0, 0, 0,
     0, 0, 1, 0,
     0, 0, 0,
@@ -100,14 +100,14 @@ INSERT INTO cards
 
 -- 7 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Iere, Vizier of Bullets', "LIGHT", "Initiate", 0,
+    ('Iere, Vizier of Bullets', 'Ierevizierofbullets.jpg', 'LIGHT', 'Initiate', 0,
     3, 3000, 0, 0,
     0, 0, 0, 1,
     1, 1, 0,
@@ -116,14 +116,14 @@ INSERT INTO cards
 
 -- 8 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Iocant, the Oracle', "LIGHT", "Light Bringer", 0,
+    ('Iocant, the Oracle', 'IocantTheOracle.jpg', 'LIGHT', 'Light Bringer', 0,
     2, 2000, 0, 1,
     0, 0, 0, 0,
     1, 0, 0,
@@ -132,14 +132,14 @@ INSERT INTO cards
 
 -- 9 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('La Ura Giga', "LIGHT", "Guardian", 0,
+    ('La Ura Giga', 'La_Ura_Giga,_Sky_Guardian.jpg', 'LIGHT', 'Guardian', 0,
     1, 2000, 0, 1,
     0, 0, 0, 0,
     1, 0, 0,
@@ -148,14 +148,14 @@ INSERT INTO cards
 
 -- 10 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Lah, Purification Enforcer', "LIGHT", "Berserker", 0,
+    ('Lah, Purification Enforcer', 'LahPurificationEnforcer.jpg', 'LIGHT', 'Berserker', 0,
     5, 5500, 0, 0,
     0, 0, 0, 1,
     1, 1, 0,
@@ -164,14 +164,14 @@ INSERT INTO cards
 
 -- 11 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Laser Wing', "LIGHT", "NONE", 1,
+    ('Laser Wing', 'LaserWing.jpg', 'LIGHT', 'NONE', 1,
     5, 0, 0, 0,
     0, 0, 0, 0,
     0, 0, 0,
@@ -180,14 +180,14 @@ INSERT INTO cards
 
 -- 12 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Lok, Vizier of Hunting', "LIGHT", "Initiate", 0,
+    ('Lok, Vizier of Hunting', 'Lokvizierofhunting.jpg', 'LIGHT', 'Initiate', 0,
     4, 4000, 0, 0,
     0, 0, 0, 1,
     1, 1, 0,
@@ -196,14 +196,14 @@ INSERT INTO cards
 
 -- 13 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Miele, Vizier of Lightning', "LIGHT", "Initiate", 0,
+    ('Miele, Vizier of Lightning', 'MieleVizierofLightning.jpg', 'LIGHT', 'Initiate', 0,
     3, 1000, 0, 0,
     0, 0, 0, 0,
     1, 0, 0,
@@ -212,14 +212,14 @@ INSERT INTO cards
 
 -- 14 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Moonlight Flash', "LIGHT", "NONE", 1,
+    ('Moonlight Flash', 'MoonlightFlash.jpg', 'LIGHT', 'NONE', 1,
     4, 0, 0, 0,
     0, 0, 0, 0,
     0, 0, 0,
@@ -228,14 +228,14 @@ INSERT INTO cards
 
 -- 15 / 110. Skipped. search your deck effect.
 --INSERT INTO cards
---    (name, type, race, is_spell_card,
+--    (name, image_file, type, race, is_spell_card,
 --    mana_cost, power, power_attacker, blocker,
 --    speed_attacker, slayer, shield_trigger, can_attack_player,
 --    can_attack_creature, break_shields, must_attack,
 --    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
 --    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
 --    VALUES
---    ('Rayla, Truth Enforcer', "LIGHT", "Berserker", 0,
+--    ('Rayla, Truth Enforcer', 'unknown.jpg', 'LIGHT', 'Berserker', 0,
 --    6, 3000, 0, 0,
 --    0, 0, 0, 1,
 --    1, 1, 0,
@@ -244,14 +244,14 @@ INSERT INTO cards
 
 -- 16 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Reusol, the Oracle', "LIGHT", "Light Bringer", 0,
+    ('Reusol, the Oracle', 'ReusoltheOracle.jpg', 'LIGHT', 'Light Bringer', 0,
     2, 2000, 0, 0,
     0, 0, 0, 1,
     1, 1, 0,
@@ -260,14 +260,14 @@ INSERT INTO cards
 
 -- 17 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Ruby Grass', "LIGHT", "Starlight Tree", 0,
+    ('Ruby Grass', 'RubyGrass.jpg', 'LIGHT', 'Starlight Tree', 0,
     3, 3000, 0, 1,
     0, 0, 0, 0,
     1, 0, 0,
@@ -276,14 +276,14 @@ INSERT INTO cards
 
 -- 18 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Senatine Jade Tree', "LIGHT", "Starlight Tree", 0,
+    ('Senatine Jade Tree', 'SenatineJadeTree.jpg', 'LIGHT', 'Starlight Tree', 0,
     3, 4000, 0, 1,
     0, 0, 0, 0,
     1, 0, 0,
@@ -292,14 +292,14 @@ INSERT INTO cards
 
 -- 19 / 110
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Solar Ray', "LIGHT", "NONE", 1,
+    ('Solar Ray', 'SolarRay(DM10).jpg', 'LIGHT', 'NONE', 1,
     2, 0, 0, 0,
     0, 0, 1, 0,
     0, 0, 0,
@@ -313,14 +313,14 @@ INSERT INTO cards
 
 --card id =
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Immortal baron, Vorg', "FIRE", "Human", 0,
+    ('Immortal baron, Vorg', 'unknown.jpg', 'FIRE', 'Human', 0,
     2, 2000, 0, 0,
     0, 0, 0, 1,
     1, 1, 0,
@@ -328,14 +328,14 @@ INSERT INTO cards
     'NONE', 'NONE', 'NONE', 'NONE');
 
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Brawler Zyler', "FIRE", "Human", 0,
+    ('Brawler Zyler', 'unknown.jpg', 'FIRE', 'Human', 0,
     2, 1000, 2000, 0,
     0, 0, 0, 1,
     1, 1, 0,
@@ -343,14 +343,14 @@ INSERT INTO cards
     'NONE', 'NONE', 'NONE', 'NONE');
 
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Stonesaur', "FIRE", "Rock Beast", 0,
+    ('Stonesaur', 'unknown.jpg', 'FIRE', 'Rock Beast', 0,
     5, 4000, 2000, 0,
     0, 0, 0, 1,
     1, 1, 0,
@@ -358,14 +358,14 @@ INSERT INTO cards
     'NONE', 'NONE', 'NONE', 'NONE');
 
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Deadly Fighter Braid Claw', "FIRE", "	Dragonoid", 0,
+    ('Deadly Fighter Braid Claw', 'unknown.jpg', 'FIRE', 'Dragonoid', 0,
     1, 1000, 0, 0,
     0, 0, 0, 1,
     1, 0, 1,
@@ -373,14 +373,14 @@ INSERT INTO cards
     'NONE', 'NONE', 'NONE', 'NONE');
 
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Phantom Fish', "WATER", "Gel Fish", 0,
+    ('Phantom Fish', 'unknown.jpg', 'WATER', 'Gel Fish', 0,
     3, 4000, 0, 1,
     0, 0, 0, 0,
     0, 0, 0,
@@ -392,14 +392,14 @@ INSERT INTO cards
 
 -- S1 / S10
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Hanusa, Radiance Elemental', "LIGHT", "Angel Command", 0,
+    ('Hanusa, Radiance Elemental', 'HanusaRadianceElemental.jpg', 'LIGHT', 'Angel Command', 0,
     7, 9500, 0, 0,
     0, 0, 0, 1,
     1, 2, 0,
@@ -408,14 +408,14 @@ INSERT INTO cards
 
 -- S2 / S10
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Urth, Purifying Elemental', "LIGHT", "Angel Command", 0,
+    ('Urth, Purifying Elemental', 'UrthPurifyingElemental.jpg', 'LIGHT', 'Angel Command', 0,
     6, 6000, 0, 0,
     0, 0, 0, 1,
     1, 2, 0,
@@ -424,14 +424,14 @@ INSERT INTO cards
 
 -- S3 / S10
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Aqua Sniper', "WATER", "Liquid People", 0,
+    ('Aqua Sniper', 'AquaSniper.jpg', 'WATER', 'Liquid People', 0,
     8, 5000, 0, 0,
     0, 0, 0, 1,
     1, 1, 0,
@@ -440,14 +440,14 @@ INSERT INTO cards
 
 -- S4 / S10
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('King Depthcon', "WATER", "Leviathan", 0,
+    ('King Depthcon', 'KingDepthcon.jpg', 'WATER', 'Leviathan', 0,
     7, 6000, 0, 0,
     0, 0, 0, 1,
     1, 2, 0,
@@ -456,14 +456,14 @@ INSERT INTO cards
 
 -- S5 / S10
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Deathliger, Lion of Chaos', "DARKNESS", "Demon Command", 0,
+    ('Deathliger, Lion of Chaos', 'DeathligerLionofChaos.jpg', 'DARKNESS', 'Demon Command', 0,
     7, 9000, 0, 0,
     0, 0, 0, 1,
     1, 2, 0,
@@ -472,14 +472,14 @@ INSERT INTO cards
 
 -- S6 / S10
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Zagaan, Knight of Darkness', "DARKNESS", "Demon Command", 0,
+    ('Zagaan, Knight of Darkness', 'ZagaanKnightofDarkness.jpg', 'DARKNESS', 'Demon Command', 0,
     6, 7000, 0, 0,
     0, 0, 0, 1,
     1, 2, 0,
@@ -488,14 +488,14 @@ INSERT INTO cards
 
 -- S7 / S10
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Astrocomet Dragon', "FIRE", "Armored Dragon", 0,
+    ('Astrocomet Dragon', 'AstrocometDragon.jpg', 'FIRE', 'Armored Dragon', 0,
     7, 6000, 4000, 0,
     0, 0, 0, 1,
     1, 2, 0,
@@ -504,14 +504,14 @@ INSERT INTO cards
 
 -- S8 / S10
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Scarlet Skyterror', "FIRE", "Armored Wyvern", 0,
+    ('Scarlet Skyterror', 'ScarletSkyterror.jpg', 'FIRE', 'Armored Wyvern', 0,
     8, 3000, 0, 0,
     0, 0, 0, 1,
     1, 1, 0,
@@ -520,14 +520,14 @@ INSERT INTO cards
 
 -- S9 / S10
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Deathblade Beetle', "NATURE", "Giant Insect", 0,
+    ('Deathblade Beetle', 'DeathbladeBeetle.jpg', 'NATURE', 'Giant Insect', 0,
     5, 3000, 4000, 0,
     0, 0, 0, 1,
     1, 2, 0,
@@ -536,17 +536,16 @@ INSERT INTO cards
 
 -- S10 / S10
 INSERT INTO cards
-    (name, type, race, is_spell_card,
+    (name, image_file, type, race, is_spell_card,
     mana_cost, power, power_attacker, blocker,
     speed_attacker, slayer, shield_trigger, can_attack_player,
     can_attack_creature, break_shields, must_attack,
     can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
     spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
     VALUES
-    ('Roaring Great-Horn', "NATURE", "Horned Beast", 0,
+    ('Roaring Great-Horn', 'RoaringGreatHorn.jpg', 'NATURE', 'Horned Beast', 0,
     7, 8000, 2000, 0,
     0, 0, 0, 1,
     1, 2, 0,
     0, 0, 0, 0,
     'NONE', 'NONE', 'NONE', 'NONE');
-
