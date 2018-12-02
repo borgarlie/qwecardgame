@@ -306,6 +306,38 @@ INSERT INTO cards
     0, 0, 0, 0,
     'TAP_ONE_OPPONENT_CREATURE', 'NONE', 'NONE', 'NONE');
 
+-- 20 / 110
+INSERT INTO cards
+    (name, image_file, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Sonic Wing', 'SonicWing.jpg', 'LIGHT', 'NONE', 1,
+    3, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0,
+    0, 0, 0, 0,
+    'TEMP_CANT_BLOCK', 'NONE', 'NONE', 'NONE');
+
+-- 21 / 110
+INSERT INTO cards
+    (name, image_file, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Szubs Kin, Twilight Guardian', 'SzubsKinTwilightGuardian.jpg', 'LIGHT', 'Guardian', 0,
+    5, 6000, 0, 1,
+    0, 0, 0, 0,
+    1, 0, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'NONE', 'NONE');
+
 -- Immortal baron, Vorg
 -- Brawler zyler
 -- stonesaur

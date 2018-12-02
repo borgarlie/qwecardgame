@@ -70,6 +70,28 @@ public class SpellHandler {
         sendJsonMessageToOtherPlayer(currentPlayer, mainGameLoop, spellCard, useOnOpponentCards, useOnOwnCards);
     }
 
+    @HandleSpellEffect(TEMP_CANT_BLOCK)
+    public static void handleTempCantBlock(
+            MainGameLoop.Player currentPlayer,
+            MainGameLoop mainGameLoop,
+            Card spellCard,
+            List<Integer> useOnOpponentCards,
+            List<Integer> useOnOwnCards) throws GameError, IOException {
+        if (useOnOwnCards.size() > 1) {
+            throw new GameError(
+                    GameError.ErrorCode.NOT_ALLOWED,
+                    "Can not use spell effect " + TEMP_CANT_BLOCK + " on more than 1 creature");
+        }
+        System.out.println("Using spell effect TEMP_CANT_BLOCK");
+        PlayerState currentPlayerState = mainGameLoop.getCurrentPlayerState(currentPlayer);
+        useOnOwnCards.forEach(battleZonePosition -> {
+            Card card = currentPlayerState.battlezone.get(battleZonePosition);
+            card.setTemp_can_not_be_blocked(true);
+        });
+        // Send json to other player
+        sendJsonMessageToOtherPlayer(currentPlayer, mainGameLoop, spellCard, useOnOpponentCards, useOnOwnCards);
+    }
+
     @HandleSpellEffect(TEMP_CANT_BLOCK_X2)
     public static void handleTempCantBlockX2(
             MainGameLoop.Player currentPlayer,
