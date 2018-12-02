@@ -338,6 +338,42 @@ INSERT INTO cards
     0, 0, 0, 0,
     'NONE', 'NONE', 'NONE', 'NONE');
 
+-- 22 / 110
+-- Toel, Vizier of Hope
+-- Skipped. End of turn effect that propagates on other cards.
+
+-- 23 / 110
+INSERT INTO cards
+    (name, image_file, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Aqua Hulcus', 'AquaHulcus.jpg', 'WATER', 'Liquid People', 0,
+    3, 2000, 0, 0,
+    0, 0, 0, 1,
+    1, 1, 0,
+    0, 0, 0, 0,
+    'NONE', 'DRAW_CARD_EFFECT', 'NONE', 'NONE');
+
+-- 24 / 110
+INSERT INTO cards
+    (name, image_file, type, race, is_spell_card,
+    mana_cost, power, power_attacker, blocker,
+    speed_attacker, slayer, shield_trigger, can_attack_player,
+    can_attack_creature, break_shields, must_attack,
+    can_not_be_blocked, can_attack_untapped_creatures, untap_at_end, destroy_on_win,
+    spell_effect, summon_creature_effect, destroy_creature_effect, temp_on_attack_effect)
+    VALUES
+    ('Aqua Knight, Twilight Guardian', 'AquaKnight.jpg', 'WATER', 'Liquid People', 0,
+    5, 4000, 0, 0,
+    0, 0, 0, 1,
+    1, 1, 0,
+    0, 0, 0, 0,
+    'NONE', 'NONE', 'RETURN_TO_HAND', 'NONE');
+
 -- Immortal baron, Vorg
 -- Brawler zyler
 -- stonesaur

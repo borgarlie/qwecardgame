@@ -9,7 +9,9 @@ public enum SummonCreatureEffect {
     DESTROY_ALL_BLOCKERS ("When you put this creature into the battle zone, " +
             "destroy all creatures that have 'blocker'"),
     TAP_ONE_CREATURE ("When you put this creature into the battle zone, " +
-            "you may choose 1 of your opponent’s creatures in the battle zone and tap it.");
+            "you may choose 1 of your opponent’s creatures in the battle zone and tap it."),
+    DRAW_CARD_EFFECT ("When you put this creature into the battle zone, you may draw a card.");
+
 
     private final String description;
 

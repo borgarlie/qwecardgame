@@ -4,6 +4,7 @@ import Pojos.Card;
 import Pojos.SummonCreatureEffect;
 import Utils.HandleSummonCreatureEffect;
 import Utils.ReflectionUtil;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -14,6 +15,10 @@ import java.util.Map;
 import static Pojos.SummonCreatureEffect.*;
 
 public class SummonCreatureEffectHandler {
+
+    private static final String TYPE = "type";
+    private static final String DRAW_CARD = "draw_card";
+    private static final String DRAWN_CARD = "drawn_card";
 
     // map of all summon creature effect handlers
     private static Map<SummonCreatureEffect, Method> summonCreatureEffectHandlers
@@ -111,4 +116,20 @@ public class SummonCreatureEffectHandler {
         useOnOpponentCards.forEach(otherPlayerState::tapCreature);
     }
 
+    @HandleSummonCreatureEffect(DRAW_CARD_EFFECT)
+    public static void handleDrawCard(
+            MainGameLoop.Player currentPlayer,
+            MainGameLoop mainGameLoop,
+            Card summonedCard,
+            List<Integer> useOnOpponentCards,
+            List<Integer> useOnOwnCards) throws GameError, IOException {
+        System.out.println("'DRAW_CARD_EFFECT' effect on summoned creature.");
+        PlayerState currentPlayerState = mainGameLoop.getCurrentPlayerState(currentPlayer);
+        Card drawnCard = currentPlayerState.drawCard();
+        String json = new JSONObject()
+                .put(TYPE, DRAW_CARD)
+                .put(DRAWN_CARD, drawnCard.toJson())
+                .toString();
+        currentPlayerState.session.getRemote().sendString(json);
+    }
 }
